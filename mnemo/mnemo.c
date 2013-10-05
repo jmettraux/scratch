@@ -30,14 +30,31 @@
 #include "mnemo.h"
 
 
-void _mne_tos(char *s, long l)
+const int syl_count = 47;
+
+char *syls[] = {
+  "a",  "i",  "u",  "e",  "o",
+  "ka", "ki", "ku", "ke", "ko",
+  "sa", "shi", "su", "se", "so",
+  "ta", "ti", "tsu", "te", "to",
+  "na", "ni", "nu", "ne", "no",
+  "ha", "hi", "fu", "he", "ho",
+  "ma", "mi", "mu", "me", "mo",
+  "ya",       "yu",       "yo",
+  "ra", "ri", "ru", "re", "ro",
+  "wa",             "we", "wo",
+  "n"
+};
+char *neg = "wi";
+
+void tos(char *s, long l)
 {
-  long mod = l % mne_syl_count;
-  long rest = l / mne_syl_count;
+  long mod = l % syl_count;
+  long rest = l / syl_count;
 
-  if (rest > 0) _mne_tos(s, rest);
+  if (rest > 0) tos(s, rest);
 
-  strncat(s, mne_syls[mod], 3);
+  strncat(s, syls[mod], 3);
 }
 
 char *mne_tos(long l)
@@ -46,11 +63,11 @@ char *mne_tos(long l)
 
   if (l < 0)
   {
-    strncat(r, mne_neg, 2);
+    strncat(r, neg, 2);
     l = l * -1;
   }
 
-  _mne_tos(r, l);
+  tos(r, l);
 
   return r;
 }

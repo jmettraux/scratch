@@ -23,23 +23,6 @@
 // Made in Japan.
 //
 
-const int mne_syl_count = 47;
-
-char *mne_syls[] = {
-  "a",  "i",  "u",  "e",  "o",
-  "ka", "ki", "ku", "ke", "ko",
-  "sa", "shi", "su", "se", "so",
-  "ta", "ti", "tsu", "te", "to",
-  "na", "ni", "nu", "ne", "no",
-  "ha", "hi", "fu", "he", "ho",
-  "ma", "mi", "mu", "me", "mo",
-  "ya",       "yu",       "yo",
-  "ra", "ri", "ru", "re", "ro",
-  "wa",             "we", "wo",
-  "n"
-};
-char *mne_neg = "wi";
-
 // takes an integer, returns a string
 //
 char *mne_tos(long l);
