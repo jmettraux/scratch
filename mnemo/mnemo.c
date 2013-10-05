@@ -61,5 +61,6 @@ int main(int argc, char *argv[])
   long l = atol(argv[1]);
   char *s = mne_tos(l);
   printf("%ld -> %s\n", l, s);
+  free(s);
 }
 
