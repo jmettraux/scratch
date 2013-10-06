@@ -30,6 +30,18 @@ def run(*elts)
   Result.run(elts)
 end
 
+
+require 'ffi'
+
+module Mne
+  extend FFI::Library
+
+  ffi_lib File.expand_path(File.dirname(__FILE__) + '/../libmnemo.so')
+
+  attach_function :mne_tos, [ :long ], :string
+end
+
+
 #RSpec.configure do |config|
 #end
 
