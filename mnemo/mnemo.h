@@ -23,7 +23,12 @@
 // Made in Japan.
 //
 
+#ifndef MNEMO_H
+#define MNEMO_H
+
 // takes an integer, returns a string
 //
 char *mne_tos(long l);
+
+#endif // MNEMO_H
 

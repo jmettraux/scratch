@@ -21,6 +21,8 @@ describe 'mne_tos()' do
     Mne.mne_tos(-1).should == 'wii'
 
     # so, who frees the strings?
+
+    Mne.mne_tos(-1).class.should == String
   end
 end
 
