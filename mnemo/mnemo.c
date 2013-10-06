@@ -73,6 +73,7 @@ char *mne_tos(long l)
 }
 
 
+/*
 int main(int argc, char *argv[])
 {
   long l = atol(argv[1]);
@@ -80,4 +81,5 @@ int main(int argc, char *argv[])
   printf("%ld -> %s\n", l, s);
   free(s);
 }
+*/
 
