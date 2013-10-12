@@ -12,13 +12,18 @@ require 'spec_helper'
 #  end
 #end
 
+class MneTolResult < FFI::Struct
+
+  layout :err, :int, :result, :long
+end
+
 module Mne
   extend FFI::Library
 
   ffi_lib File.expand_path(File.dirname(__FILE__) + '/../libmnemo.so')
 
   attach_function :mne_tos, [ :long ], :string
-  attach_function :mne_tol, [ :string ], :long
+  attach_function :mne_tol, [ :string ], MneTolResult.by_value
   attach_function :mne_ismnemo, [ :string ], :int
 end
 
@@ -43,12 +48,13 @@ describe 'mne_tol()' do
 
   it 'turns strings to longs' do
 
-    Mne.mne_tol('').should == 0
-    Mne.mne_tol('a').should == 0
-    Mne.mne_tol('i').should == 1
-    Mne.mne_tol('ia').should == 47
-    Mne.mne_tol('wii').should == -1
-    Mne.mne_tol('shirerete').should == 1234567
+    Mne.mne_tol('')[:err].should == 1
+
+    Mne.mne_tol('a')[:result].should == 0
+    Mne.mne_tol('i')[:result].should == 1
+    Mne.mne_tol('ia')[:result].should == 47
+    Mne.mne_tol('wii')[:result].should == -1
+    Mne.mne_tol('shirerete')[:result].should == 1234567
   end
 end
 

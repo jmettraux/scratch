@@ -72,53 +72,50 @@ char *mne_tos(long l)
   return r;
 }
 
-long tol(char *s, long l)
+mne_tol_result tol(int isStart, char *s, long l)
 {
-  if (*s == '\0') return l;
-
-  if (strncmp("wi", s, 2) == 0) return -1 * tol(s + 2, 0);
-
-  for (int i = 0; i < syl_count; i++)
-  {
-    char *syl = syls[i];
-    int len = strlen(syl);
-    if (strncmp(syl, s, len) == 0) return tol(s + len, syl_count * l + i);
-  }
-
-  return 0; // well...
-}
-
-long mne_tol(char *s)
-{
-  return tol(s, 0);
-}
-
-int ismnemo(int isstart, char *s)
-{
-  if (s == NULL) return -1;
+  if (s == NULL) return (mne_tol_result){ -1, 0 };
 
   int blank = (*s == '\0');
-  if (isstart && blank) return 0;
-  if (blank) return 1;
+  if (isStart && blank) return (mne_tol_result){ 1, 0 };
+  if (blank) return (mne_tol_result){ 0, l };
 
-  int wi = (strncmp("wi", s, 2) == 0);
-  if (isstart && wi) return ismnemo(0, s + 2);
-  if (wi) return 0;
+  if (strncmp("wi", s, 2) == 0)
+  {
+    mne_tol_result mtr = tol(0, s + 2, 0);
+    if (mtr.err != 0) return mtr;
+    return (mne_tol_result){ 0, -1 * mtr.result };
+  }
 
   for (int i = 0; i < syl_count; i++)
   {
     char *syl = syls[i];
     int len = strlen(syl);
-    if (strncmp(syl, s, len) == 0) return ismnemo(0, s + len);
+    if (strncmp(syl, s, len) == 0)
+    {
+      mne_tol_result mtr = tol(0, s + len, syl_count * l + i);
+      if (mtr.err != 0) return mtr;
+      return (mne_tol_result){ 0, mtr.result };
+    }
   }
-  return 0;
+
+  return (mne_tol_result){ 1, 0 };
+
+  // TODO: set errno?
+}
+
+mne_tol_result mne_tol(char *s)
+{
+  return tol(1, s, 0);
 }
 
 int mne_ismnemo(char *s)
 {
-  return ismnemo(1, s);
-}
+  mne_tol_result mtr = tol(1, s, 0);
 
+  if (mtr.err == -1) return mtr.err;
+  return (mtr.err == 0);
+}
 
 /*
 int main(int argc, char *argv[])

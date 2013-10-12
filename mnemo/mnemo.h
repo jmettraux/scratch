@@ -30,11 +30,16 @@
 //
 char *mne_tos(long l);
 
+typedef struct mne_tol_result {
+  int err;
+  long result;
+} mne_tol_result;
+
 // Takes a string, returns the corresponding long.
 //
 // If there is no corresponding long, returns 0...
 //
-long mne_tol(char *s);
+mne_tol_result mne_tol(char *s);
 
 // Returns 1 if the string is a mnemo string, 0 else.
 //
