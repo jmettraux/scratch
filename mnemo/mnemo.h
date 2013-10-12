@@ -26,9 +26,15 @@
 #ifndef MNEMO_H
 #define MNEMO_H
 
-// takes an integer, returns a string
+// Takes an integer, returns a string.
 //
 char *mne_tos(long l);
+
+// Takes a string, returns the corresponding long.
+//
+// If there is no corresponding long, returns 0...
+//
+long mne_tol(char *s);
 
 #endif // MNEMO_H
 

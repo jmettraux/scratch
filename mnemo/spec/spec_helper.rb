@@ -3,6 +3,7 @@ unless $made
   puts
   puts `make`
   puts
+  exit 1 if $?.exitstatus != 0
   $made = true
 end
 
@@ -32,14 +33,6 @@ end
 
 
 require 'ffi'
-
-module Mne
-  extend FFI::Library
-
-  ffi_lib File.expand_path(File.dirname(__FILE__) + '/../libmnemo.so')
-
-  attach_function :mne_tos, [ :long ], :string
-end
 
 
 #RSpec.configure do |config|

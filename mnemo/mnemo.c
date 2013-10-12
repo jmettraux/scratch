@@ -72,6 +72,27 @@ char *mne_tos(long l)
   return r;
 }
 
+long tol(char *s, long l)
+{
+  if (*s == '\0') return l;
+
+  if (strncmp("wi", s, 2) == 0) return -1 * tol(s + 2, 0);
+
+  for (int i = 0; i < syl_count; i++)
+  {
+    char *syl = syls[i];
+    int len = strlen(syl);
+    if (strncmp(syl, s, len) == 0) return tol(s + len, syl_count * l + i);
+  }
+
+  return 0; // well...
+}
+
+long mne_tol(char *s)
+{
+  return tol(s, 0);
+}
+
 
 /*
 int main(int argc, char *argv[])
