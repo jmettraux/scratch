@@ -95,6 +95,8 @@ long mne_tol(char *s)
 
 int ismnemo(int isstart, char *s)
 {
+  if (s == NULL) return -1;
+
   int blank = (*s == '\0');
   if (isstart && blank) return 0;
   if (blank) return 1;

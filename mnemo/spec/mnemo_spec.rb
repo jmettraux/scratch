@@ -54,6 +54,11 @@ end
 
 describe 'mne_ismnemo()' do
 
+  it 'returns -1 on an nil string' do
+
+    Mne.mne_ismnemo(nil).should == -1
+  end
+
   it 'returns 1 when true, 0 else' do
 
     Mne.mne_ismnemo('').should == 0
