@@ -93,6 +93,30 @@ long mne_tol(char *s)
   return tol(s, 0);
 }
 
+int ismnemo(int isstart, char *s)
+{
+  int blank = (*s == '\0');
+  if (isstart && blank) return 0;
+  if (blank) return 1;
+
+  int wi = (strncmp("wi", s, 2) == 0);
+  if (isstart && wi) return ismnemo(0, s + 2);
+  if (wi) return 0;
+
+  for (int i = 0; i < syl_count; i++)
+  {
+    char *syl = syls[i];
+    int len = strlen(syl);
+    if (strncmp(syl, s, len) == 0) return ismnemo(0, s + len);
+  }
+  return 0;
+}
+
+int mne_ismnemo(char *s)
+{
+  return ismnemo(1, s);
+}
+
 
 /*
 int main(int argc, char *argv[])

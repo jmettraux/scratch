@@ -36,5 +36,9 @@ char *mne_tos(long l);
 //
 long mne_tol(char *s);
 
+// Returns 1 if the string is a mnemo string, 0 else.
+//
+int mne_ismnemo(char *s);
+
 #endif // MNEMO_H
 

@@ -19,6 +19,7 @@ module Mne
 
   attach_function :mne_tos, [ :long ], :string
   attach_function :mne_tol, [ :string ], :long
+  attach_function :mne_ismnemo, [ :string ], :int
 end
 
 
@@ -48,6 +49,19 @@ describe 'mne_tol()' do
     Mne.mne_tol('ia').should == 47
     Mne.mne_tol('wii').should == -1
     Mne.mne_tol('shirerete').should == 1234567
+  end
+end
+
+describe 'mne_ismnemo()' do
+
+  it 'returns 1 when true, 0 else' do
+
+    Mne.mne_ismnemo('').should == 0
+    Mne.mne_ismnemo('a').should == 1
+    Mne.mne_ismnemo('ia').should == 1
+    Mne.mne_ismnemo('wii').should == 1
+    Mne.mne_ismnemo('shirerete').should == 1
+    Mne.mne_ismnemo('shit').should == 0
   end
 end
 
