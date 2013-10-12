@@ -30,7 +30,12 @@
 //
 char *mne_tos(long l);
 
-typedef struct mne_tol_result {
+// The result type for mne_tol()
+//
+// error if err != 0,
+// result if err == 0
+//
+typedef struct {
   int err;
   long result;
 } mne_tol_result;
