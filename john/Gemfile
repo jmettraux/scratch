@@ -1,0 +1,6 @@
+
+source 'https://rubygemsorg'
+
+gem 'ffi'
+gem 'rspec'
+
