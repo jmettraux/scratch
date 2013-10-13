@@ -28,9 +28,10 @@
 
 typedef struct {
   char type;
+  void *value;
 } jhn_value;
 
-jhn_value *jhn_parse(char *s);
+long jhn_value_tol(jhn_value v);
 
 #endif // JOHN_H
 

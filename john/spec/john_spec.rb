@@ -2,12 +2,10 @@
 require 'spec_helper'
 
 
-#class MneTolResult < FFI::Struct
-#
-#  layout :err, :int, :result, :long
-#end
 class JhnValue < FFI::Struct
-  layout :type, :char
+  layout(
+    :type, :char,
+    :value, :pointer)
 end
 
 module Jhn
@@ -15,24 +13,31 @@ module Jhn
 
   ffi_lib File.expand_path(File.dirname(__FILE__) + '/../libjohn.so')
 
-  attach_function :jhn_parse, [ :string ], JhnValue.by_ref
+  attach_function :jhn_value_tol, [ JhnValue.by_value ], :long
 end
 
 
 describe 'libjohn.so' do
 
-  describe 'jhn_parse()' do
+  describe 'jhn_value_tol()' do
 
-    it 'parses numbers' do
+    it 'returns -1 if the value is not a number' do
 
-      v = Jhn.jhn_parse('1')
-      v[:type].should == 'n'
+      val = JhnValue.new
+      val[:type] = 's'.bytes.first
+      val[:value] = FFI::Pointer::NULL
+
+      Jhn.jhn_value_tol(val).should == -1
     end
 
-    it 'parses strings' do
+    it 'returns a long' do
 
-      v = Jhn.jhn_parse('"a"')
-      v[:type].should == 's'
+      val = JhnValue.new
+      val[:type] = 'n'.bytes.first
+      val[:value] = FFI::MemoryPointer.new(:long)
+      val[:value].put_int32(0, 1234567)
+
+      Jhn.jhn_value_tol(val).should == 1234567
     end
   end
 end

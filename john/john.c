@@ -27,8 +27,10 @@
 #include "john.h"
 
 
-jhn_value *jhn_parse(char *s)
-{
-  return &(jhn_value){ "n" };
-};
+long jhn_value_tol(jhn_value v) {
+
+  if (v.type != 'n') return -1;
+
+  return *((long *)v.value);
+}
 
