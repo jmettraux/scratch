@@ -91,12 +91,7 @@ mne_tol_result tol(int isStart, char *s, long l)
   {
     char *syl = syls[i];
     int len = strlen(syl);
-    if (strncmp(syl, s, len) == 0)
-    {
-      mne_tol_result mtr = tol(0, s + len, syl_count * l + i);
-      if (mtr.err != 0) return mtr;
-      return (mne_tol_result){ 0, mtr.result };
-    }
+    if (strncmp(syl, s, len) == 0) return tol(0, s + len, syl_count * l + i);
   }
 
   return (mne_tol_result){ 1, 0 };
