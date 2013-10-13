@@ -32,6 +32,7 @@ typedef struct {
 } jhn_value;
 
 long jhn_value_tol(jhn_value v);
+char *jhn_value_tos(jhn_value v);
 
 #endif // JOHN_H
 
