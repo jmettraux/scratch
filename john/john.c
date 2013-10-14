@@ -23,14 +23,12 @@
 // Made in Japan.
 //
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "john.h"
 
 
 long jhn_value_tol(jhn_value v)
 {
-
   if (v.type != 'n') return -1;
 
   return *((long *)v.value);
