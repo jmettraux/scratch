@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define L (long unsigned)1000000
+#define L (size_t)1000000
   // ~ max on the stack for my GNU/Linux
 
 // to use clock_gettime, had to
@@ -63,13 +63,13 @@ int main(int argc, char *argv[])
   char *toto = "toto";
   printf("%lu\n", SIZE_MAX);
   printf("%s\n", toto);
-  //return 0;
+
+  char *array[L];
 
   for (int ii = 0; ii < 3; ii++)
   {
     double start = now();
 
-    char *array[L];
     for (size_t i = 0; i < L; i++)
     {
       //if (i % 10000 == 0) printf("%lu\n", i);
@@ -81,6 +81,6 @@ int main(int argc, char *argv[])
   }
 
   printf("%lu\n", L - 1);
-  //printf("<%s>\n", array[L - 1]);
+  printf("<%s>\n", array[L - 1]);
 }
 
