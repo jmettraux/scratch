@@ -1,0 +1,22 @@
+
+  typedef struct {
+    char type;
+    char *value;
+    void *newvalue;
+  } jhn_value;
+
+storing the value in its original string form
+
+optional newvalue... or else stringify immediately into value
+
+== until 20131024
+
+isn't a union better?
+
+lots of casting, but why not...
+
+  typedef struct {
+    char type;
+    void *value;
+  } jhn_value;
+
