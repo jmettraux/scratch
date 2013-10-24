@@ -23,14 +23,22 @@
 // Made in Japan.
 //
 
+//#define xstr(s) str(s)
+//#define str(s) #s
+
+#define _TOKENPASTE(x, y) x ## y
+#define TOKENPASTE(x, y) _TOKENPASTE(x, y)
+
 
 #ifndef ZEST_H
 #define ZEST_H
 
-  #define describe(T) push("describe", T);
-  #define context(T) push("context", T);
-  #define end pop();
-  #define it(T) test(T); void x()
+  #define TEST_NAME TOKENPASTE(test_, __LINE__)
+
+  #define describe(T) zest_push_describe(T);
+  #define context(T) zest_push_context(T);
+  #define end zest_pop();
+  #define it(T) zest_flag_test(__LINE__, __FILE__); void TEST_NAME()
 
 #endif // ZEST_H
 
