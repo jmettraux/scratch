@@ -41,3 +41,9 @@ char *jhn_value_tos(jhn_value v)
   return (char *)v.value;
 }
 
+void jhn_value_free(jhn_value *v)
+{
+  free(v->value);
+  free(v);
+}
+
