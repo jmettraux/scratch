@@ -40,5 +40,7 @@
   #define end zest_pop();
   #define it(T) zest_flag_test(__LINE__, __FILE__); void TEST_NAME()
 
+  #define ensure(s) zest_ensure(s)
+
 #endif // ZEST_H
 
