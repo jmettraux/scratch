@@ -1,8 +1,11 @@
 
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 //#include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
+#include <stdlib.h>
 
 // USAGE:
 // zest [dir]
@@ -17,6 +20,25 @@ int str_ends(char *s, char *end)
   if (le > ls) return 0;
 
   return (strncmp(s + ls - le, end, le) == 0);
+}
+
+int process(char *path)
+{
+  FILE *fp = fopen(path, "r");
+  if (fp == NULL) return 0;
+
+  char *line = NULL;
+  size_t len = 0;
+  while (getline(&line, &len, fp) != -1)
+  {
+    line[strlen(line) - 1] = '\0';
+    printf("line: >%s<\n", line);
+  }
+
+  free(line);
+  fclose(fp);
+
+  return 1;
 }
 
 int main(int argc, char *argv[])
@@ -39,7 +61,7 @@ int main(int argc, char *argv[])
   while ((ep = readdir(dp)) != NULL)
   {
     if ( ! str_ends(ep->d_name, "_spec.c")) continue;
-    printf("file: %s\n", ep->d_name);
+    process(ep->d_name);
   }
   closedir(dp);
 
