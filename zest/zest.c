@@ -9,16 +9,14 @@
 
 // http://www.gnu.org/software/libc/manual/html_node/Simple-Directory-Lister.html
 
-int ends_with(char *s, char *end)
+int str_ends(char *s, char *end)
 {
   size_t ls = strlen(s);
   size_t le = strlen(end);
 
   if (le > ls) return 0;
 
-  char *ss = s + ls - le;
-
-  return (strncmp(ss, end, le) == 0);
+  return (strncmp(s + ls - le, end, le) == 0);
 }
 
 int main(int argc, char *argv[])
@@ -40,7 +38,7 @@ int main(int argc, char *argv[])
 
   while ((ep = readdir(dp)) != NULL)
   {
-    if ( ! ends_with(ep->d_name, "_spec.c")) continue;
+    if ( ! str_ends(ep->d_name, "_spec.c")) continue;
     printf("file: %s\n", ep->d_name);
   }
   closedir(dp);
