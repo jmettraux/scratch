@@ -22,7 +22,7 @@ int str_ends(char *s, char *end)
   return (strncmp(s + ls - le, end, le) == 0);
 }
 
-int process(char *path)
+int process_lines(char *path)
 {
   FILE *fp = fopen(path, "r");
   if (fp == NULL) return 0;
@@ -61,6 +61,32 @@ int process(char *path)
   fclose(fp);
 
   return 1;
+}
+
+void print_header(char *path)
+{
+}
+void print_footer(char *path)
+{
+  // deal with -l and -e
+  puts("");
+  puts("int main(int argc, char *argv[])");
+  puts("{");
+  puts("}");
+}
+
+
+int process(char *path)
+{
+  int r = 1;
+
+  print_header(path);
+
+  r = process_lines(path);
+
+  print_footer(path);
+
+  return r;
 }
 
 int main(int argc, char *argv[])
