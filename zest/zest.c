@@ -29,10 +29,32 @@ int process(char *path)
 
   char *line = NULL;
   size_t len = 0;
+
   while (getline(&line, &len, fp) != -1)
   {
-    line[strlen(line) - 1] = '\0';
-    printf("line: >%s<\n", line);
+    char *l = (char *)strndup(line, strlen(line));
+    char *head = strtok(l, " 	(");
+    //printf("line:    >%s<\n", line);
+    //printf("  head:  >%s<\n", head);
+
+    if (strncmp(head, "describe", 8) == 0)
+    {
+      puts("D");
+    }
+    else if (strncmp(head, "context", 7) == 0)
+    {
+      puts("C");
+    }
+    else if (strncmp(head, "it", 2) == 0)
+    {
+      puts("I");
+    }
+    else
+    {
+      printf("%s", line);
+    }
+
+    free(l);
   }
 
   free(line);
