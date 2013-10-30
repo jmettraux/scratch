@@ -19,13 +19,16 @@
 
 describe "mne_tos()"
 {
-  it "turns longs to mnemonic (hopefully) strings"
+  context "cows are flying"
   {
-    ensure mne_to_s(0) == "a"
-    ensure(mne_to_s(1) == "i")
-    ensure(mne_to_s(47) == "ia")
-    ensure(mne_to_s(-1) == "wii")
-    ensure(mne_to_s(1234567) == "shirerete")
+    it "turns longs to mnemonic (hopefully) strings"
+    {
+      ensure mne_to_s(0) == "a"
+      ensure(mne_to_s(1) == "i")
+      ensure(mne_to_s(47) == "ia")
+      ensure(mne_to_s(-1) == "wii")
+      ensure(mne_to_s(1234567) == "shirerete")
+    }
   }
 }
 

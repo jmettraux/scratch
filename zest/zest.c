@@ -12,6 +12,9 @@
 
 // http://www.gnu.org/software/libc/manual/html_node/Simple-Directory-Lister.html
 
+//
+// helper functions
+
 int str_ends(char *s, char *end)
 {
   size_t ls = strlen(s);
@@ -22,10 +25,54 @@ int str_ends(char *s, char *end)
   return (strncmp(s + ls - le, end, le) == 0);
 }
 
+//
+// the stack
+
+typedef struct level_s {
+  struct level_s *parent;
+  char *type;
+  char *title;
+} level_s;
+
+void push(level_s **stack, char *type, char *title)
+{
+  level_s *l = malloc(sizeof(level_s));
+  l->parent = *stack;
+  l->type = strndup(type, strlen(type));
+  l->title = strndup(title, strlen(title));
+  *stack = l;
+}
+
+level_s *pop(level_s **stack)
+{
+  level_s *t = *stack;
+  *stack = t->parent;
+  return t;
+}
+
+//void free_level(level_s *l)
+//{
+//  free(l->type);
+//  free(l->title);
+//  free(l);
+//}
+//void free_stack(level_s **stack)
+//{
+//  if (stack == NULL) return;
+//  level_s *parent = (*stack)->parent;
+//  free_level(*stack);
+//  free_stack(&parent);
+//}
+
+//
+// processing work
+
 int process_lines(char *path)
 {
   FILE *fp = fopen(path, "r");
   if (fp == NULL) return 0;
+
+  level_s *stack = NULL;
 
   char *line = NULL;
   size_t len = 0;
@@ -40,14 +87,17 @@ int process_lines(char *path)
     if (strncmp(head, "describe", 8) == 0)
     {
       puts("D");
+      push(&stack, head, line);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
       puts("C");
+      push(&stack, head, line);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
       puts("I");
+      push(&stack, head, line);
     }
     else
     {
@@ -59,6 +109,19 @@ int process_lines(char *path)
 
   free(line);
   fclose(fp);
+
+  puts("---");
+  printf("top: %p\n", stack);
+  level_s *top = stack;
+  while (1)
+  {
+    if (top == NULL) break;
+    printf("level: %s '%s'\n", top->type, top->title);
+    top = top->parent;
+  }
+  puts("---");
+
+  //free_stack(&stack);
 
   return 1;
 }
