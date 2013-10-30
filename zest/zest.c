@@ -67,6 +67,15 @@ level_s *pop(level_s **stack)
 //
 // processing work
 
+char *extract_head(char *line)
+{
+  char *stop = strpbrk(line, "     (");
+
+  if (stop == NULL) return strdup(line);
+  if (stop == line) return extract_head(line + 1);
+  return strndup(line, stop - line);
+}
+
 int process_lines(char *path)
 {
   FILE *fp = fopen(path, "r");
@@ -79,32 +88,32 @@ int process_lines(char *path)
 
   while (getline(&line, &len, fp) != -1)
   {
-    char *l = (char *)strndup(line, strlen(line));
-    char *head = strtok(l, " 	(");
+    puts("");
+    char *head = extract_head(line);
     //printf("line:    >%s<\n", line);
     //printf("  head:  >%s<\n", head);
 
     if (strncmp(head, "describe", 8) == 0)
     {
       puts("D");
-      push(&stack, head, line);
+      //push(&stack, head, line);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
       puts("C");
-      push(&stack, head, line);
+      //push(&stack, head, line);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
       puts("I");
-      push(&stack, head, line);
+      //push(&stack, head, line);
     }
     else
     {
       printf("%s", line);
     }
 
-    free(l);
+    free(head);
   }
 
   free(line);
