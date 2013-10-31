@@ -29,6 +29,9 @@ describe "mne_tos()"
       ensure(mne_to_s(-1) == "wii")
       ensure(mne_to_s(1234567) == "shirerete")
     }
+    it "flips \"burgers\""
+    {
+    }
   }
 }
 

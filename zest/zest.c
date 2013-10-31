@@ -76,6 +76,15 @@ char *extract_head(char *line)
   return strndup(line, stop - line);
 }
 
+char *extract_title(char *line)
+{
+  char *start = strpbrk(line, "\"");
+  if (start == NULL) return NULL;
+  char *end = strpbrk(start + 1, "\"");
+  if (end == NULL) return NULL;
+  return strndup(start + 1, end - start - 1);
+}
+
 int process_lines(char *path)
 {
   FILE *fp = fopen(path, "r");
@@ -88,24 +97,25 @@ int process_lines(char *path)
 
   while (getline(&line, &len, fp) != -1)
   {
-    puts("");
     char *head = extract_head(line);
+    char *title = extract_title(line);
     //printf("line:    >%s<\n", line);
-    //printf("  head:  >%s<\n", head);
+    //printf("  head:   >%s<\n", head);
+    //printf("  title:  >%s<\n", title);
 
     if (strncmp(head, "describe", 8) == 0)
     {
-      puts("D");
+      printf("D >%s<\n", title);
       //push(&stack, head, line);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
-      puts("C");
+      printf("C >%s<\n", title);
       //push(&stack, head, line);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      puts("I");
+      printf("I >%s<\n", title);
       //push(&stack, head, line);
     }
     else
@@ -114,6 +124,7 @@ int process_lines(char *path)
     }
 
     free(head);
+    free(title);
   }
 
   free(line);
