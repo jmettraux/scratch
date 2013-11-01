@@ -80,8 +80,16 @@ char *extract_title(char *line)
 {
   char *start = strpbrk(line, "\"");
   if (start == NULL) return NULL;
-  char *end = strpbrk(start + 1, "\"");
-  if (end == NULL) return NULL;
+
+  char *s = start;
+  char *end = NULL;
+  while (1)
+  {
+    end = strpbrk(s + 1, "\"");
+    if (end == NULL) return NULL;
+    if (*(end - 1) != '\\') break;
+    s++;
+  }
   return strndup(start + 1, end - start - 1);
 }
 
