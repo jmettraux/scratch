@@ -76,21 +76,34 @@ char *extract_head(char *line)
   return strndup(line, stop - line);
 }
 
+char *extract_string(char *line)
+{
+  char *l = line;
+  char *r = (char *)malloc(strlen(line));
+  for (int i = 0; i < strlen(line); i++) *(r + i) = '\0';
+  char *rr = r;
+
+  while (1)
+  {
+    if (*l == '\0') break;
+    if (*l == '\\' && *(l + 1) == '"') ++l;
+    else if (*l == '"') break;
+    *(rr++) = *l;
+    ++l;
+  }
+
+  if (*l == '"') return r;
+
+  free(r);
+  return NULL;
+}
+
 char *extract_title(char *line)
 {
   char *start = strpbrk(line, "\"");
   if (start == NULL) return NULL;
 
-  char *s = start;
-  char *end = NULL;
-  while (1)
-  {
-    end = strpbrk(s + 1, "\"");
-    if (end == NULL) return NULL;
-    if (*(end - 1) != '\\') break;
-    s++;
-  }
-  return strndup(start + 1, end - start - 1);
+  return extract_string(start + 1);
 }
 
 int process_lines(char *path)

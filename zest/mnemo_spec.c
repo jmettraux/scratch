@@ -35,6 +35,9 @@ describe "mne_tos()"
     it "finds the コンビニ convenient"
     {
     }
+    it "does not care about \n"
+    {
+    }
   }
 }
 
