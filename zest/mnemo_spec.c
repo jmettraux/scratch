@@ -32,6 +32,9 @@ describe "mne_tos()"
     it "flips \"burgers\""
     {
     }
+    it "finds the コンビニ convenient"
+    {
+    }
   }
 }
 
