@@ -30,15 +30,15 @@ int str_ends(char *s, char *end)
 
 typedef struct level_s {
   struct level_s *parent;
-  char *type;
+  char type;
   char *title;
 } level_s;
 
-void push(level_s **stack, char *type, char *title)
+void push(level_s **stack, char type, char *title)
 {
   level_s *l = malloc(sizeof(level_s));
   l->parent = *stack;
-  l->type = strndup(type, strlen(type));
+  l->type = type;
   l->title = strndup(title, strlen(title));
   *stack = l;
 }
@@ -50,12 +50,11 @@ level_s *pop(level_s **stack)
   return t;
 }
 
-//void free_level(level_s *l)
-//{
-//  free(l->type);
-//  free(l->title);
-//  free(l);
-//}
+void free_level(level_s *l)
+{
+  free(l->title);
+  free(l);
+}
 //void free_stack(level_s **stack)
 //{
 //  if (stack == NULL) return;
@@ -63,6 +62,26 @@ level_s *pop(level_s **stack)
 //  free_level(*stack);
 //  free_stack(&parent);
 //}
+
+char *str_neuter(char *s)
+{
+  char *r = strdup(s);
+  char *c = r;
+
+  while(*c != '\0')
+  {
+    if (
+      ! (
+        (*c >= 48 && *c <= 57) ||   // 0 to 9
+        (*c >= 97 && *c <= 122) ||  // a to z
+        (*c >= 65 && *c <= 90)      // A to Z
+      )
+    ) *c = '_';
+    ++c;
+  }
+
+  return r;
+}
 
 //
 // processing work
@@ -126,18 +145,19 @@ int process_lines(char *path)
 
     if (strncmp(head, "describe", 8) == 0)
     {
-      printf("D >%s<\n", title);
-      //push(&stack, head, line);
+      push(&stack, 'd', title);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
-      printf("C >%s<\n", title);
-      //push(&stack, head, line);
+      push(&stack, 'c', title);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      printf("I >%s<\n", title);
-      //push(&stack, head, line);
+      printf("currently: %s\n", stack->title);
+      //if (stack->type == 'i')
+      //{
+      //}
+      push(&stack, 'i', title);
     }
     else
     {
@@ -157,7 +177,7 @@ int process_lines(char *path)
   while (1)
   {
     if (top == NULL) break;
-    printf("level: %s '%s'\n", top->type, top->title);
+    printf("level: %c '%s'\n", top->type, top->title);
     top = top->parent;
   }
   puts("---");
