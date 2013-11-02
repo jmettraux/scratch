@@ -98,8 +98,7 @@ char *extract_head(char *line)
 char *extract_string(char *line)
 {
   char *l = line;
-  char *r = (char *)malloc(strlen(line));
-  for (int i = 0; i < strlen(line); i++) *(r + i) = '\0';
+  char *r = (char *)calloc(strlen(line), sizeof(char));
   char *rr = r;
 
   while (1)
