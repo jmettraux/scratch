@@ -43,6 +43,14 @@ void push(level_s **stack, char type, char *title)
   *stack = l;
 }
 
+int depth(level_s **stack)
+{
+  level_s *top = *stack;
+
+  if (top->parent == NULL) return 1;
+  return 1 + depth(&(top->parent));
+}
+
 level_s *pop(level_s **stack)
 {
   level_s *t = *stack;
@@ -80,6 +88,35 @@ char *str_neuter(char *s)
     ++c;
   }
 
+  return r;
+}
+
+char *compute_test_function_name(level_s **stack)
+{
+  int d = depth(stack);
+  level_s *top = *stack;
+  level_s *restack = (level_s *)malloc(d * sizeof(level_s));
+  printf("... %d\n", d - 1);
+  int l = 1024;
+  for (int i = d - 1; i >= 0; i--)
+  {
+    restack[i] = *top;
+    top = top->parent;
+    //l += strlen(top->title);
+  }
+  l += (d - 1) * 2; // for the "__"
+  char *r = (char *)malloc(l * sizeof(char));
+  char *rr = r;
+  for (int i = 0; i < d; i++)
+  {
+    printf("t1: %d: %s\n", i, restack[i].title);
+    strcpy(rr, str_neuter(restack[i].title));
+    rr += strlen(restack[i].title);
+    strcpy(rr, "__");
+    rr += 2;
+  }
+  *(rr - 2) = '\0';
+  printf("r: >%s<\n", r);
   return r;
 }
 
@@ -152,7 +189,8 @@ int process_lines(char *path)
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      printf("currently: %s\n", stack->title);
+      printf("depth: %d\n", depth(&stack));
+      compute_test_function_name(&stack);
       //if (stack->type == 'i')
       //{
       //}
