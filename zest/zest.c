@@ -187,23 +187,29 @@ int process_lines(char *path)
     //printf("line:    >%s<\n", line);
     //printf("  head:   >%s<\n", head);
     //printf("  title:  >%s<\n", title);
+    char stype = (stack != NULL) ? stack->type : 'X';
 
     if (strncmp(head, "describe", 8) == 0)
     {
+      if (stype == 'i') pop(&stack);
       push(&stack, 'd', title);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
+      if (stype == 'i') pop(&stack);
       push(&stack, 'c', title);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      if (stack->type == 'i') pop(&stack);
+      if (stype == 'i') pop(&stack);
       push(&stack, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
       printf("int %s()\n", fname);
-      printf("STACK->TYPE: %c\n", stack->type);
       free(fname);
+    }
+    else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
+    {
+      //printf("\n");
     }
     else
     {
