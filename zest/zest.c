@@ -51,25 +51,26 @@ int depth(level_s **stack)
   return 1 + depth(&(top->parent));
 }
 
-level_s *pop(level_s **stack)
-{
-  level_s *t = *stack;
-  *stack = t->parent;
-  return t;
-}
-
 void free_level(level_s *l)
 {
   free(l->title);
   free(l);
 }
-//void free_stack(level_s **stack)
-//{
-//  if (stack == NULL) return;
-//  level_s *parent = (*stack)->parent;
-//  free_level(*stack);
-//  free_stack(&parent);
-//}
+
+int pop(level_s **stack)
+{
+  if (*stack == NULL) return 1;
+  //printf("pop: %p -> %p -> %p\n", stack, *stack, (*stack)->parent);
+  level_s *t = *stack;
+  *stack = t->parent;
+  free_level(t);
+  return 0;
+}
+
+void free_stack(level_s **stack)
+{
+  while( ! pop(stack)) {}
+}
 
 char *str_neuter(char *s)
 {
@@ -91,32 +92,39 @@ char *str_neuter(char *s)
   return r;
 }
 
-char *compute_test_function_name(level_s **stack)
+char *compute_test_function_name(level_s **stack, int lnumber)
 {
   int d = depth(stack);
   level_s *top = *stack;
   level_s *restack = (level_s *)malloc(d * sizeof(level_s));
-  printf("... %d\n", d - 1);
-  int l = 1024;
+
   for (int i = d - 1; i >= 0; i--)
   {
     restack[i] = *top;
     top = top->parent;
-    //l += strlen(top->title);
   }
-  l += (d - 1) * 2; // for the "__"
-  char *r = (char *)malloc(l * sizeof(char));
+
+  char *r = (char *)malloc(d * 210 * sizeof(char));
   char *rr = r;
+
+  strcpy(rr, "test__");
+  rr += 6;
+
   for (int i = 0; i < d; i++)
   {
-    printf("t1: %d: %s\n", i, restack[i].title);
-    strcpy(rr, str_neuter(restack[i].title));
+    char *n = str_neuter(restack[i].title);
+    strcpy(rr, n);
+    free(n);
     rr += strlen(restack[i].title);
     strcpy(rr, "__");
     rr += 2;
   }
-  *(rr - 2) = '\0';
-  printf("r: >%s<\n", r);
+  rr += sprintf(rr, "%d", lnumber);
+  *rr = '\0';
+
+  free(restack);
+
+  //printf("r: >%s<\n", r);
   return r;
 }
 
@@ -168,6 +176,7 @@ int process_lines(char *path)
 
   level_s *stack = NULL;
 
+  int lnumber = 0;
   char *line = NULL;
   size_t len = 0;
 
@@ -189,12 +198,12 @@ int process_lines(char *path)
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      printf("depth: %d\n", depth(&stack));
-      compute_test_function_name(&stack);
-      //if (stack->type == 'i')
-      //{
-      //}
+      if (stack->type == 'i') pop(&stack);
       push(&stack, 'i', title);
+      char *fname = compute_test_function_name(&stack, lnumber);
+      printf("int %s()\n", fname);
+      printf("STACK->TYPE: %c\n", stack->type);
+      free(fname);
     }
     else
     {
@@ -203,23 +212,25 @@ int process_lines(char *path)
 
     free(head);
     free(title);
+
+    ++lnumber;
   }
 
   free(line);
   fclose(fp);
 
-  puts("---");
-  printf("top: %p\n", stack);
-  level_s *top = stack;
-  while (1)
-  {
-    if (top == NULL) break;
-    printf("level: %c '%s'\n", top->type, top->title);
-    top = top->parent;
-  }
-  puts("---");
+  //puts("---");
+  //printf("top: %p\n", stack);
+  //level_s *top = stack;
+  //while (1)
+  //{
+  //  if (top == NULL) break;
+  //  printf("level: %c '%s'\n", top->type, top->title);
+  //  top = top->parent;
+  //}
+  //puts("---");
 
-  //free_stack(&stack);
+  free_stack(&stack);
 
   return 1;
 }
@@ -254,7 +265,7 @@ int main(int argc, char *argv[])
 {
   char *dir = ".";
   if (argc > 1) dir = argv[1];
-  printf("dir: %s\n", dir);
+  //printf("dir: %s\n", dir);
 
   DIR *dp;
   struct dirent *ep;
