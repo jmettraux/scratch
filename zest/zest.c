@@ -198,9 +198,6 @@ int process_lines(char *path)
     int indent = extract_indent(line);
     char *head = extract_head(line);
     char *title = extract_title(line);
-    //printf("line:    >%s<\n", line);
-    //printf("  head:   >%s<\n", head);
-    //printf("  title:  >%s<\n", title);
     char stype = (stack != NULL) ? stack->type : 'X';
 
     if (strncmp(head, "describe", 8) == 0)
@@ -215,7 +212,6 @@ int process_lines(char *path)
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      if (stype == 'i') pop(&stack);
       push(&stack, indent, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
       printf("int %s()\n", fname);
@@ -224,6 +220,11 @@ int process_lines(char *path)
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
     {
       //printf("\n");
+    }
+    else if (stype == 'i' && head[0] == '}' && indent == stack->indent)
+    {
+      pop(&stack);
+      printf("%s", line);
     }
     else
     {
@@ -238,17 +239,6 @@ int process_lines(char *path)
 
   free(line);
   fclose(fp);
-
-  //puts("---");
-  //printf("top: %p\n", stack);
-  //level_s *top = stack;
-  //while (1)
-  //{
-  //  if (top == NULL) break;
-  //  printf("level: %c '%s'\n", top->type, top->title);
-  //  top = top->parent;
-  //}
-  //puts("---");
 
   free_stack(&stack);
 
