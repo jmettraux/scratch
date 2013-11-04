@@ -30,14 +30,16 @@ int str_ends(char *s, char *end)
 
 typedef struct level_s {
   struct level_s *parent;
+  int indent;
   char type;
   char *title;
 } level_s;
 
-void push(level_s **stack, char type, char *title)
+void push(level_s **stack, int indent, char type, char *title)
 {
   level_s *l = malloc(sizeof(level_s));
   l->parent = *stack;
+  l->indent = indent;
   l->type = type;
   l->title = strndup(title, strlen(title));
   *stack = l;
@@ -131,6 +133,17 @@ char *compute_test_function_name(level_s **stack, int lnumber)
 //
 // processing work
 
+int extract_indent(char *line)
+{
+  for (int i = 0; i < strlen(line); i++)
+  {
+    if (*(line + i) == ' ') continue;
+    if (*(line + i) == '\t') continue;
+    return i;
+  }
+  return -1;
+}
+
 char *extract_head(char *line)
 {
   char *stop = strpbrk(line, "     (");
@@ -182,6 +195,7 @@ int process_lines(char *path)
 
   while (getline(&line, &len, fp) != -1)
   {
+    int indent = extract_indent(line);
     char *head = extract_head(line);
     char *title = extract_title(line);
     //printf("line:    >%s<\n", line);
@@ -192,17 +206,17 @@ int process_lines(char *path)
     if (strncmp(head, "describe", 8) == 0)
     {
       if (stype == 'i') pop(&stack);
-      push(&stack, 'd', title);
+      push(&stack, indent, 'd', title);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
       if (stype == 'i') pop(&stack);
-      push(&stack, 'c', title);
+      push(&stack, indent, 'c', title);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
       if (stype == 'i') pop(&stack);
-      push(&stack, 'i', title);
+      push(&stack, indent, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
       printf("int %s()\n", fname);
       free(fname);
