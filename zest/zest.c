@@ -41,7 +41,7 @@ void push(level_s **stack, int indent, char type, char *title)
   l->parent = *stack;
   l->indent = indent;
   l->type = type;
-  l->title = strndup(title, strlen(title));
+  l->title = strdup(title);
   *stack = l;
 }
 
