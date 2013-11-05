@@ -182,7 +182,7 @@ char *extract_title(char *line)
   return extract_string(start + 1);
 }
 
-int process_lines(char *path)
+int process_lines(FILE *out, char *path)
 {
   FILE *fp = fopen(path, "r");
   if (fp == NULL) return 0;
@@ -214,21 +214,21 @@ int process_lines(char *path)
     {
       push(&stack, indent, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
-      printf("int %s()\n", fname);
+      fprintf(out, "int %s()\n", fname);
       free(fname);
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
     {
-      //printf("\n");
+      // nothing
     }
     else if (stype == 'i' && head[0] == '}' && indent == stack->indent)
     {
       pop(&stack);
-      printf("%s", line);
+      fprintf(out, "%s", line);
     }
     else
     {
-      printf("%s", line);
+      fprintf(out, "%s", line);
     }
 
     free(head);
@@ -245,28 +245,42 @@ int process_lines(char *path)
   return 1;
 }
 
-void print_header(char *path)
+void print_header(FILE *out, char *path)
 {
 }
-void print_footer(char *path)
+void print_footer(FILE *out, char *path)
 {
   // deal with -l and -e
-  puts("");
-  puts("int main(int argc, char *argv[])");
-  puts("{");
-  puts("}");
+  fprintf(out, "\n");
+  fprintf(out, "int main(int argc, char *argv[])\n");
+  fprintf(out, "{\n");
+  fprintf(out, "}\n\n");
 }
 
 
 int process(char *path)
 {
+  char *fname = (char *)malloc((strlen(path) + 2) * sizeof(char));
+  strcat(fname, "z_");
+  strcat(fname, path);
+  FILE *out = fopen(fname, "wb");
+
+  if (out == NULL)
+  {
+    perror("couldn't open file for writing");
+    return 0;
+  }
+
   int r = 1;
 
-  print_header(path);
+  print_header(out, path);
 
-  r = process_lines(path);
+  r = process_lines(out, path);
 
-  print_footer(path);
+  print_footer(out, path);
+
+  free(fname);
+  fclose(out);
 
   return r;
 }
@@ -275,7 +289,6 @@ int main(int argc, char *argv[])
 {
   char *dir = ".";
   if (argc > 1) dir = argv[1];
-  //printf("dir: %s\n", dir);
 
   DIR *dp;
   struct dirent *ep;
@@ -291,6 +304,8 @@ int main(int argc, char *argv[])
   while ((ep = readdir(dp)) != NULL)
   {
     if ( ! str_ends(ep->d_name, "_spec.c")) continue;
+    if (strncmp(ep->d_name, "z_", 2) == 0) continue;
+
     process(ep->d_name);
   }
   closedir(dp);

@@ -42,6 +42,8 @@ describe "mne_tos()"
     it "does not care about \n"
     {
     }
+
+    // that's all folks
   }
 }
 
