@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define TEST_FUNCNAME_LEN 210
+
 // USAGE:
 // zest [dir]
 
@@ -106,7 +108,7 @@ char *compute_test_function_name(level_s **stack, int lnumber)
     top = top->parent;
   }
 
-  char *r = (char *)malloc(d * 210 * sizeof(char));
+  char *r = (char *)malloc(d * TEST_FUNCNAME_LEN * sizeof(char));
   char *rr = r;
 
   strcpy(rr, "test__");
