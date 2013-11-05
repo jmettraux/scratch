@@ -257,10 +257,9 @@ void print_footer(FILE *out, char *path)
   fprintf(out, "}\n\n");
 }
 
-
 int process(char *path)
 {
-  char *fname = (char *)malloc((strlen(path) + 2) * sizeof(char));
+  char *fname = (char *)calloc(strlen(path) + 3, sizeof(char));
   strcat(fname, "z_");
   strcat(fname, path);
   FILE *out = fopen(fname, "wb");
