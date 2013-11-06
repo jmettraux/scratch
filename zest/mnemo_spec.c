@@ -25,13 +25,13 @@ describe "mne_tos()"
     {
       for (int i = 0; i < 10; i++)
       {
-        printf("i: %d\n", i);
+        //printf("i: %d\n", i);
       }
-      ensure mne_to_s(0) == "a"
-      ensure(mne_to_s(1) == "i")
-      ensure(mne_to_s(47) == "ia")
-      ensure(mne_to_s(-1) == "wii")
-      ensure(mne_to_s(1234567) == "shirerete")
+      ensure(zeq(mne_to_s(0), "a"));
+      ensure(zeq(mne_to_s(1), "i"));
+      ensure(zeq(mne_to_s(47), "ia"));
+      ensure(zeq(mne_to_s(-1), "wii"));
+      ensure(zeq(mne_to_s(1234567), "shirerete"));
     }
     it "flips \"burgers\""
     {

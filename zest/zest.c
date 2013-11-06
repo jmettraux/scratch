@@ -215,7 +215,7 @@ char *extract_condition(char *line)
   int len = strlen(l) - 1;
   for (int i = len; i > 0; i--)
   {
-    if (l[i - 1] == ')') { len = i - 1; break; }
+    if (l[i - 1] == ';') { len = i - 1; break; }
     if (l[i - 1] == ' ') continue;
     break;
   }
@@ -260,7 +260,7 @@ int process_lines(FILE *out, char *path)
     else if (strncmp(head, "ensure", 6) == 0)
     {
       char *con = extract_condition(line);
-      fprintf(out, "  if ( ! (%s)) return 0;\n", con);
+      fprintf(out, "  if ( ! (%s) return 0;\n", con);
       free(con);
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
@@ -294,6 +294,13 @@ int process_lines(FILE *out, char *path)
 
 void print_header(FILE *out, char *path)
 {
+  fprintf(out, "\n");
+  fprintf(out, "#include <string.h>\n");
+  fprintf(out, "int zeq(char *s0, char *s1)\n");
+  fprintf(out, "{\n");
+  fprintf(out, "  if (*s0 != *s1) return 0;\n");
+  fprintf(out, "  return (strncmp(s0, s1, strlen(s0)) == 0);\n");
+  fprintf(out, "}\n");
 }
 void print_footer(FILE *out, char *path)
 {
