@@ -208,6 +208,20 @@ char *extract_title(char *line)
   return extract_string(start + 1);
 }
 
+char *extract_condition(char *line)
+{
+  char *l = line;
+  l = strpbrk(l, "e") + 7;
+  int len = strlen(l) - 1;
+  for (int i = len; i > 0; i--)
+  {
+    if (l[i - 1] == ')') { len = i - 1; break; }
+    if (l[i - 1] == ' ') continue;
+    break;
+  }
+  return strndup(l, len);
+}
+
 int process_lines(FILE *out, char *path)
 {
   FILE *fp = fopen(path, "r");
@@ -243,6 +257,12 @@ int process_lines(FILE *out, char *path)
       fprintf(out, "int %s()\n", fname);
       free(fname);
     }
+    else if (strncmp(head, "ensure", 6) == 0)
+    {
+      char *con = extract_condition(line);
+      fprintf(out, "  if ( ! (%s)) return 0;\n", con);
+      free(con);
+    }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
     {
       // nothing
@@ -250,6 +270,7 @@ int process_lines(FILE *out, char *path)
     else if (stype == 'i' && head[0] == '}' && indent == stack->indent)
     {
       pop(&stack);
+      fprintf(out, "  return 1;\n");
       fprintf(out, "%s", line);
     }
     else
