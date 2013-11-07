@@ -295,11 +295,15 @@ int process_lines(FILE *out, char *path)
 void print_header(FILE *out, char *path)
 {
   fprintf(out, "\n");
-  fprintf(out, "#include <string.h>\n");
   fprintf(out, "int zeq(char *s0, char *s1)\n");
   fprintf(out, "{\n");
-  fprintf(out, "  if (*s0 != *s1) return 0;\n");
-  fprintf(out, "  return (strncmp(s0, s1, strlen(s0)) == 0);\n");
+  fprintf(out, "  if (s0 == s1) return 1;\n");
+  fprintf(out, "  for (int i = 0; i < 16 * 1024; i++)\n");
+  fprintf(out, "  {\n");
+  fprintf(out, "    if (*(s0 + i) != *(s1 + i)) return 0;\n");
+  fprintf(out, "    if (s0 == 0) return 1; // slash zero\n");
+  fprintf(out, "  }\n");
+  fprintf(out, "  return 0;\n");
   fprintf(out, "}\n");
 }
 void print_footer(FILE *out, char *path)
