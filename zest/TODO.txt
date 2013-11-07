@@ -5,3 +5,26 @@
     { char *line; int lineNumber }...
 [o] make zeq independent from string.h, and bounded
 
+[ ] hooks file, injected when zest processes the spec?
+
+```
+Rufus::Scheduler
+  custom locks
+      does not trigger when #confirm_lock returns false (FAILED - 1)
+
+Failures:
+
+  1) Rufus::Scheduler custom locks does not trigger when #confirm_lock returns false
+     Failure/Error: 1.should == 2
+     expected: 2
+     got: 1 (using ==)
+     # ./spec/custom_locks_spec.rb:34:in `block (3 levels) in <top (required)>'
+
+Finished in 0.00089 seconds
+1 example, 1 failure
+
+Failed examples:
+
+rspec ./spec/custom_locks_spec.rb:32 # Rufus::Scheduler custom locks does not trigger when #confirm_lock returns false
+```
+

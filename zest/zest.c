@@ -51,6 +51,36 @@ int str_ends(char *s, char *end)
   return (strncmp(s + ls - le, end, le) == 0);
 }
 
+/*
+//
+// test function result struct
+
+typedef struct result_s {
+  char *title;
+  //char *line;
+  char *fname;
+  int lnumber;
+} result_s;
+
+result_s *fail(char *title, char *fname, int lnumber)
+{
+  result_s *r = malloc(sizeof(result_s));
+  r->title = strdup(title);
+  //r->line = strdup(line);
+  r->fname = strdup(fname);
+  r->lnumber = lnumber;
+  return r;
+}
+
+void free_result(result_s *r)
+{
+  free(r->title);
+  //free(r->line);
+  free(r->fname);
+  free(r);
+}
+*/
+
 //
 // the stack
 
@@ -254,13 +284,18 @@ int process_lines(FILE *out, char *path)
     {
       push(&stack, indent, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
-      fprintf(out, "int %s()\n", fname);
+      fprintf(out, "result_s %s()\n", fname);
       free(fname);
     }
     else if (strncmp(head, "ensure", 6) == 0)
     {
       char *con = extract_condition(line);
-      fprintf(out, "  if ( ! (%s) return 0;\n", con);
+      fprintf(out, "  if ( ! (%s)\n", con);
+      fprintf(out, "  {\n");
+      fprintf(
+        out,
+        "    return fail(\"%s\", \"%s\", %d);\n", "title", path, lnumber);
+      fprintf(out, "  }\n");
       free(con);
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
@@ -270,7 +305,7 @@ int process_lines(FILE *out, char *path)
     else if (stype == 'i' && head[0] == '}' && indent == stack->indent)
     {
       pop(&stack);
-      fprintf(out, "  return 1;\n");
+      fprintf(out, "  return NULL;\n");
       fprintf(out, "%s", line);
     }
     else
