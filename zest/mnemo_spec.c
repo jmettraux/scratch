@@ -1,5 +1,6 @@
 
-#include <../mnemo/mnemo.h>
+#include <string.h>
+#include "../mnemo/mnemo.h"
 
 //describe 'mne_tos()' do
 //
@@ -27,11 +28,12 @@ describe "mne_tos()"
       {
         //printf("i: %d\n", i);
       }
-      ensure(zeq(mne_to_s(0), "a"));
-      ensure(zeq(mne_to_s(1), "i"));
-      ensure(zeq(mne_to_s(47), "ia"));
-      ensure(zeq(mne_to_s(-1), "wii"));
-      ensure(zeq(mne_to_s(1234567), "shirerete"));
+      ensure strcmp(mne_to_s(0), "a") == 0;
+      ensure strcmp(mne_to_s(1), "i") == 0;
+      ensure strcmp(mne_to_s(47), "ia") == 0;
+      ensure strcmp(mne_to_s(-1), "wii") == 0;
+      ensure strcmp(mne_to_s(1234567), "shirerete") == 0;
+      ensure strcmp(mne_to_s(0), "a") == 0;
     }
     it "flips \"burgers\""
     {

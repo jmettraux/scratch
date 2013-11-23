@@ -243,12 +243,6 @@ char *extract_condition(char *line)
   char *l = line;
   l = strpbrk(l, "e") + 7;
   int len = strlen(l) - 1;
-  for (int i = len; i > 0; i--)
-  {
-    if (l[i - 1] == ';') { len = i - 1; break; }
-    if (l[i - 1] == ' ') continue;
-    break;
-  }
   return strndup(l, len);
 }
 
@@ -290,12 +284,13 @@ int process_lines(FILE *out, char *path)
     else if (strncmp(head, "ensure", 6) == 0)
     {
       char *con = extract_condition(line);
-      fprintf(out, "  if ( ! (%s)\n", con);
-      fprintf(out, "  {\n");
       fprintf(
         out,
-        "    return fail(\"%s\", \"%s\", %d);\n", "title", path, lnumber);
-      fprintf(out, "  }\n");
+        "  int r = %s\n", con);
+      fprintf(
+        out,
+        "  if ( ! r) return fail(\"%s\", \"%s\", %d);\n",
+        "title", path, lnumber);
       free(con);
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
@@ -329,17 +324,6 @@ int process_lines(FILE *out, char *path)
 
 void print_header(FILE *out, char *path)
 {
-  fprintf(out, "\n");
-  fprintf(out, "int zeq(char *s0, char *s1)\n");
-  fprintf(out, "{\n");
-  fprintf(out, "  if (s0 == s1) return 1;\n");
-  fprintf(out, "  for (int i = 0; i < 16 * 1024; i++)\n");
-  fprintf(out, "  {\n");
-  fprintf(out, "    if (*(s0 + i) != *(s1 + i)) return 0;\n");
-  fprintf(out, "    if (s0 == 0) return 1; // slash zero\n");
-  fprintf(out, "  }\n");
-  fprintf(out, "  return 0;\n");
-  fprintf(out, "}\n");
 }
 void print_footer(FILE *out, char *path)
 {
