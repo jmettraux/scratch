@@ -36,6 +36,7 @@
 #define HEADER "\n\
 int fail(int sc, char *s[], char *fname, int lnumber)\n\
 {\n\
+  return 0;\n\
 }\n\
 "
 #define FOOTER "\n\
@@ -362,7 +363,7 @@ int process_lines(FILE *out, char *path)
     else if (stype == 'i' && head[0] == '}' && indent == stack->indent)
     {
       pop(&stack);
-      fprintf(out, "  return NULL;\n");
+      fprintf(out, "  return 1;\n");
       fprintf(out, "%s", line);
     }
     else
