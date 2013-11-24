@@ -33,6 +33,17 @@
 
 #define TEST_FUNCNAME_LEN 210
 
+#define HEADER "\n\
+// header...\n\
+"
+#define FOOTER "\n\
+int main(int argc, char *argv[])\n\
+{\n\
+}\n\
+\n\
+"
+  // TODO: deal with -l, -e and co
+
 // USAGE:
 // zest [dir]
 
@@ -324,14 +335,11 @@ int process_lines(FILE *out, char *path)
 
 void print_header(FILE *out, char *path)
 {
+  fprintf(out, HEADER);
 }
 void print_footer(FILE *out, char *path)
 {
-  // deal with -l and -e
-  fprintf(out, "\n");
-  fprintf(out, "int main(int argc, char *argv[])\n");
-  fprintf(out, "{\n");
-  fprintf(out, "}\n\n");
+  fprintf(out, FOOTER);
 }
 
 int process(char *path)
