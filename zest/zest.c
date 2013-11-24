@@ -194,6 +194,7 @@ char *compute_test_function_name(level_s **stack, int lnumber)
     char *n = str_neuter(titles[i]);
     strcpy(rr, n);
     free(n);
+    free(titles[i]);
     rr += strlen(titles[i]);
     strcpy(rr, "__");
     rr += 2;
