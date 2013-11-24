@@ -161,17 +161,27 @@ char *str_neuter(char *s)
   return r;
 }
 
-char *compute_test_function_name(level_s **stack, int lnumber)
+char **list_titles(level_s **stack)
 {
   int d = depth(stack);
   level_s *top = *stack;
-  level_s *restack = (level_s *)malloc(d * sizeof(level_s));
+
+  char **result = malloc(d * TEST_FUNCNAME_LEN * sizeof(char));
 
   for (int i = d - 1; i >= 0; i--)
   {
-    restack[i] = *top;
+    result[i] = strdup(top->title);
     top = top->parent;
   }
+
+  return result;
+}
+
+char *compute_test_function_name(level_s **stack, int lnumber)
+{
+  int d = depth(stack);
+
+  char **titles = list_titles(stack);
 
   char *r = (char *)malloc(d * TEST_FUNCNAME_LEN * sizeof(char));
   char *rr = r;
@@ -181,19 +191,19 @@ char *compute_test_function_name(level_s **stack, int lnumber)
 
   for (int i = 0; i < d; i++)
   {
-    char *n = str_neuter(restack[i].title);
+    char *n = str_neuter(titles[i]);
     strcpy(rr, n);
     free(n);
-    rr += strlen(restack[i].title);
+    rr += strlen(titles[i]);
     strcpy(rr, "__");
     rr += 2;
   }
+
   rr += sprintf(rr, "%d", lnumber);
   *rr = '\0';
 
-  free(restack);
+  free(titles);
 
-  //printf("r: >%s<\n", r);
   return r;
 }
 
