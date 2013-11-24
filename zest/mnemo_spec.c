@@ -37,6 +37,7 @@ describe "mne_tos()"
     }
     it "flips \"burgers\""
     {
+      ensure strcmp(mne_tos(0), "a") == 0;
     }
     it "finds the コンビニ convenient"
     {

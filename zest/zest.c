@@ -310,6 +310,8 @@ int process_lines(FILE *out, char *path)
   if (fp == NULL) return 0;
 
   level_s *stack = NULL;
+  int varcount = 0;
+  int funcount = -1;
 
   int lnumber = 0;
   char *line = NULL;
@@ -338,8 +340,9 @@ int process_lines(FILE *out, char *path)
       char *fname = compute_test_function_name(&stack, lnumber);
       char *s = list_titles_as_literal(&stack);
       int sc = depth(&stack);
-      fprintf(out, "int %s_sc = %i;\n", fname, sc);
-      fprintf(out, "char *%s_s[] = %s;\n", fname, s);
+      funcount++;
+      fprintf(out, "int sc_%i = %i;\n", funcount, sc);
+      fprintf(out, "char *s_%i[] = %s;\n", funcount, s);
       fprintf(out, "int %s()\n", fname);
       free(fname);
       free(s);
@@ -347,16 +350,15 @@ int process_lines(FILE *out, char *path)
     else if (strncmp(head, "ensure", 6) == 0)
     {
       char *con = extract_condition(line);
-      char *fname = compute_test_function_name(&stack, lnumber);
       fprintf(
         out,
-        "  int r = %s\n", con);
+        "  int r%i = %s\n", varcount, con);
       fprintf(
         out,
-        "  if ( ! r) return fail(%s_sc, %s_s, \"%s\", %d);\n",
-        fname, fname, path, lnumber);
+        "  if ( ! r%i) return fail(sc_%i, s_%i, \"%s\", %d);\n",
+        varcount, funcount, funcount, path, lnumber);
       free(con);
-      free(fname);
+      ++varcount;
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
     {
