@@ -34,7 +34,9 @@
 #define TEST_FUNCNAME_LEN 210
 
 #define HEADER "\n\
-// header...\n\
+int fail(int sc, char *s[], char *fname, int lnumber)\n\
+{\n\
+}\n\
 "
 #define FOOTER "\n\
 int main(int argc, char *argv[])\n\
@@ -177,6 +179,39 @@ char **list_titles(level_s **stack)
   return result;
 }
 
+char *list_titles_as_literal(level_s **stack)
+{
+  int d = depth(stack);
+
+  char **titles = list_titles(stack);
+
+  char *r = (char *)malloc((d + 1) * (4 + TEST_FUNCNAME_LEN) * sizeof(char));
+  char *rr = r;
+
+  strcpy(rr, "{ ");
+  rr += 2;
+
+  for (int i = 0; i < d; i++)
+  {
+    strcpy(rr, "\"");
+    rr += 1;
+    strcpy(rr, titles[i]);
+    rr += strlen(titles[i]);
+    free(titles[i]);
+    strcpy(rr, "\"");
+    rr += 1;
+    if (i < d - 1) { strcpy(rr, ", "); rr += 2; }
+  }
+
+  strcpy(rr, " }");
+  rr += 2;
+  *rr = '\0';
+
+  free(titles);
+
+  return r;
+}
+
 char *compute_test_function_name(level_s **stack, int lnumber)
 {
   int d = depth(stack);
@@ -300,19 +335,24 @@ int process_lines(FILE *out, char *path)
     {
       push(&stack, indent, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
-      fprintf(out, "result_s %s()\n", fname);
+      fprintf(out, "int %s()\n", fname);
       free(fname);
     }
     else if (strncmp(head, "ensure", 6) == 0)
     {
       char *con = extract_condition(line);
+      int sc = depth(&stack);
+      char *s = list_titles_as_literal(&stack);
       fprintf(
         out,
         "  int r = %s\n", con);
       fprintf(
         out,
-        "  if ( ! r) return fail(\"%s\", \"%s\", %d);\n",
-        "title", path, lnumber);
+        "  char *s[] = %s;\n", s);
+      fprintf(
+        out,
+        "  if ( ! r) return fail(%d, s, \"%s\", %d);\n",
+        sc, path, lnumber);
       free(con);
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
