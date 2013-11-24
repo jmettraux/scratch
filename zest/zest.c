@@ -336,25 +336,27 @@ int process_lines(FILE *out, char *path)
     {
       push(&stack, indent, 'i', title);
       char *fname = compute_test_function_name(&stack, lnumber);
+      char *s = list_titles_as_literal(&stack);
+      int sc = depth(&stack);
+      fprintf(out, "int %s_sc = %i;\n", fname, sc);
+      fprintf(out, "char *%s_s[] = %s;\n", fname, s);
       fprintf(out, "int %s()\n", fname);
       free(fname);
+      free(s);
     }
     else if (strncmp(head, "ensure", 6) == 0)
     {
       char *con = extract_condition(line);
-      int sc = depth(&stack);
-      char *s = list_titles_as_literal(&stack);
+      char *fname = compute_test_function_name(&stack, lnumber);
       fprintf(
         out,
         "  int r = %s\n", con);
       fprintf(
         out,
-        "  char *s[] = %s;\n", s);
-      fprintf(
-        out,
-        "  if ( ! r) return fail(%d, s, \"%s\", %d);\n",
-        sc, path, lnumber);
+        "  if ( ! r) return fail(%s_sc, %s_s, \"%s\", %d);\n",
+        fname, fname, path, lnumber);
       free(con);
+      free(fname);
     }
     else if (stype != 'i' && (head[0] == '{' || head[0] == '}'))
     {
