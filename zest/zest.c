@@ -241,13 +241,14 @@ char *extract_string(char *line)
   char *l = line;
   char *r = (char *)calloc(strlen(line), sizeof(char));
   char *rr = r;
+  char prev = 0;
 
   while (1)
   {
     if (*l == '\0') break;
-    if (*l == '\\' && *(l + 1) == '"') ++l;
-    else if (*l == '"') break;
+    else if (*l == '"' && prev != '\\') break;
     *(rr++) = *l;
+    prev = *l;
     ++l;
   }
 
