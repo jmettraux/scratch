@@ -31,7 +31,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define TEST_FUNCNAME_LEN 210
+#define TITLE_MAX_LENGTH 210
 
 #define HEADER "\n\
 int fail(int sc, char *s[], char *fname, int lnumber)\n\
@@ -169,7 +169,7 @@ char **list_titles(level_s **stack)
   int d = depth(stack);
   level_s *top = *stack;
 
-  char **result = malloc(d * TEST_FUNCNAME_LEN * sizeof(char));
+  char **result = malloc(d * TITLE_MAX_LENGTH * sizeof(char));
 
   for (int i = d - 1; i >= 0; i--)
   {
@@ -186,7 +186,7 @@ char *list_titles_as_literal(level_s **stack)
 
   char **titles = list_titles(stack);
 
-  char *r = (char *)malloc((d + 1) * (4 + TEST_FUNCNAME_LEN) * sizeof(char));
+  char *r = (char *)malloc((d + 1) * (4 + TITLE_MAX_LENGTH) * sizeof(char));
   char *rr = r;
 
   strcpy(rr, "{ ");
@@ -206,37 +206,6 @@ char *list_titles_as_literal(level_s **stack)
 
   strcpy(rr, " }");
   rr += 2;
-  *rr = '\0';
-
-  free(titles);
-
-  return r;
-}
-
-char *compute_test_function_name(level_s **stack, int lnumber)
-{
-  int d = depth(stack);
-
-  char **titles = list_titles(stack);
-
-  char *r = (char *)malloc(d * TEST_FUNCNAME_LEN * sizeof(char));
-  char *rr = r;
-
-  strcpy(rr, "test__");
-  rr += 6;
-
-  for (int i = 0; i < d; i++)
-  {
-    char *n = str_neuter(titles[i]);
-    strcpy(rr, n);
-    rr += strlen(titles[i]);
-    strcpy(rr, "__");
-    rr += 2;
-    free(n);
-    free(titles[i]);
-  }
-
-  rr += sprintf(rr, "%d", lnumber);
   *rr = '\0';
 
   free(titles);
@@ -337,14 +306,13 @@ int process_lines(FILE *out, char *path)
     else if (strncmp(head, "it", 2) == 0)
     {
       push(&stack, indent, 'i', title);
-      char *fname = compute_test_function_name(&stack, lnumber);
       char *s = list_titles_as_literal(&stack);
       int sc = depth(&stack);
       funcount++;
+      fprintf(out, "\n");
       fprintf(out, "int sc_%i = %i;\n", funcount, sc);
       fprintf(out, "char *s_%i[] = %s;\n", funcount, s);
-      fprintf(out, "int %s()\n", fname);
-      free(fname);
+      fprintf(out, "int test_%i()\n", funcount);
       free(s);
     }
     else if (strncmp(head, "ensure", 6) == 0)
