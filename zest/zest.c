@@ -33,20 +33,6 @@
 
 #define TITLE_MAX_LENGTH 210
 
-#define HEADER "\n\
-int fail(int sc, char *s[], char *fname, int lnumber)\n\
-{\n\
-  return 0;\n\
-}\n\
-"
-#define FOOTER "\n\
-int main(int argc, char *argv[])\n\
-{\n\
-}\n\
-\n\
-"
-  // TODO: deal with -l, -e and co
-
 // USAGE:
 // zest [dir]
 
@@ -360,11 +346,20 @@ int process_lines(FILE *out, char *path)
 
 void print_header(FILE *out, char *path)
 {
-  fprintf(out, HEADER);
+  fputs("#include <stdio.h>\n", out);
+  fputs("int fail(int sc, char *s[], char *fname, int lnumber)\n", out);
+  fputs("{\n", out);
+  fputs("  printf(\"failed at line: \%s:\%d\\n\", fname, lnumber);\n", out);
+  fputs("  return 0;\n", out);
+  fputs("}\n", out);
 }
 void print_footer(FILE *out, char *path)
 {
-  fprintf(out, FOOTER);
+  // TODO: deal with -l, -e and co
+  fprintf(out, "int main(int argc, char *argv[])\n");
+  fprintf(out, "{\n");
+  fprintf(out, "  test_0();\n");
+  fprintf(out, "}\n");
 }
 
 int process(char *path)

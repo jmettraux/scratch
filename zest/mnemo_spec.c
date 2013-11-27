@@ -24,16 +24,20 @@ describe "mne_tos()"
   {
     it "turns longs to mnemonic (hopefully) strings"
     {
+      printf("hello 0\n");
       for (int i = 0; i < 10; i++)
       {
         //printf("i: %d\n", i);
       }
+      printf("out: %d\n", strcmp(mne_tos(0), "a"));
       ensure strcmp(mne_tos(0), "a") == 0;
+      ensure strcmp(mne_tos(7), "nada") == 0;
       ensure strcmp(mne_tos(1), "i") == 0;
       ensure strcmp(mne_tos(47), "ia") == 0;
       ensure strcmp(mne_tos(-1), "wii") == 0;
       ensure strcmp(mne_tos(1234567), "shirerete") == 0;
       ensure strcmp(mne_tos(0), "a") == 0;
+      printf("hello 1\n");
     }
     it "flips \"burgers\""
     {
