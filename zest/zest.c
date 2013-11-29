@@ -257,7 +257,8 @@ char *extract_condition(char *line)
   char *l = line;
   l = strpbrk(l, "e") + 7;
   int len = strlen(l) - 1;
-  return strndup(l, len);
+  while (*(l + (len - 1)) != ';') len = len - 1;
+  return strndup(l, len - 1);
 }
 
 int process_lines(FILE *out, char *path)
@@ -307,7 +308,7 @@ int process_lines(FILE *out, char *path)
       char *con = extract_condition(line);
       fprintf(
         out,
-        "  int r%i = %s\n", varcount, con);
+        "  int r%i = (%s);\n", varcount, con);
       fprintf(
         out,
         "  if ( ! r%i) return fail(sc_%i, s_%i, \"%s\", %d);\n",
