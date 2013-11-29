@@ -270,7 +270,7 @@ int process_lines(FILE *out, char *path)
   int varcount = 0;
   int funcount = -1;
 
-  int lnumber = 0;
+  int lnumber = 1;
   char *line = NULL;
   size_t len = 0;
 
