@@ -52,6 +52,33 @@ int str_ends(char *s, char *end)
 }
 
 //
+// context
+
+typedef struct context_s {
+  int funcount;
+  int incc;
+  char **includes;
+} context_s;
+
+context_s *malloc_context()
+{
+  context_s *c = malloc(sizeof(context_s));
+  c->funcount = 0;
+  c->incc = 0;
+  c->includes = malloc(147 * 161 * sizeof(char));
+  return c;
+}
+void free_context(context_s *c)
+{
+  for (int i = 0; i < c->incc; i++)
+  {
+    free(c->includes[i]);
+  }
+  free(c->includes);
+  free(c);
+}
+
+//
 // the stack
 
 typedef struct level_s {
@@ -231,7 +258,7 @@ char *extract_condition(char *line)
   return strndup(l, len - 1);
 }
 
-int process_lines(FILE *out, int funcount, char *path)
+void process_lines(FILE *out, context_s *c, char *path)
 {
   fprintf(out, "\n");
   fprintf(out, "  /*\n");
@@ -239,7 +266,7 @@ int process_lines(FILE *out, int funcount, char *path)
   fprintf(out, "   */\n");
 
   FILE *fp = fopen(path, "r");
-  if (fp == NULL) return 0;
+  if (fp == NULL) return;
 
   level_s *stack = NULL;
   int varcount = 0;
@@ -247,9 +274,6 @@ int process_lines(FILE *out, int funcount, char *path)
   int lnumber = 1;
   char *line = NULL;
   size_t len = 0;
-
-  int incc = 0;
-  char **includes = malloc(147 * 161 * sizeof(char));
 
   while (getline(&line, &len, fp) != -1)
   {
@@ -274,10 +298,10 @@ int process_lines(FILE *out, int funcount, char *path)
       char *s = list_titles_as_literal(&stack);
       int sc = depth(&stack);
       fprintf(out, "\n");
-      fprintf(out, "int sc_%i = %i;\n", funcount, sc);
-      fprintf(out, "char *s_%i[] = %s;\n", funcount, s);
-      fprintf(out, "int test_%i()\n", funcount);
-      funcount++;
+      fprintf(out, "int sc_%i = %i;\n", c->funcount, sc);
+      fprintf(out, "char *s_%i[] = %s;\n", c->funcount, s);
+      fprintf(out, "int test_%i()\n", c->funcount);
+      c->funcount++;
       free(s);
     }
     else if (strncmp(head, "ensure", 6) == 0)
@@ -289,11 +313,11 @@ int process_lines(FILE *out, int funcount, char *path)
       fprintf(
         out,
         "    if ( ! r%i) return ze_fail(sc_%i, s_%i, \"%s\", %d);\n",
-        varcount, funcount, funcount, path, lnumber);
+        varcount, c->funcount, c->funcount, path, lnumber);
       fprintf(
         out,
         "    else ze_success(sc_%i, s_%i, \"%s\", %d);\n",
-        funcount, funcount, path, lnumber);
+        c->funcount, c->funcount, path, lnumber);
       free(con);
       ++varcount;
     }
@@ -311,7 +335,7 @@ int process_lines(FILE *out, int funcount, char *path)
     {
       if (strncmp(head, "#include", 8) == 0 && title)
       {
-        includes[incc++] = strdup(title);
+        c->includes[c->incc++] = strdup(title);
       }
       fprintf(out, "%s", line);
     }
@@ -326,13 +350,6 @@ int process_lines(FILE *out, int funcount, char *path)
   fclose(fp);
 
   free_stack(&stack);
-
-  //for (int i = 0; i < incc; i++)
-  //{
-  //  printf("inc: >%s<\n", includes[i]);
-  //}
-
-  return funcount;
 }
 
 void print_header(FILE *out)
@@ -396,7 +413,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  int funcount = 0;
+  context_s *c = malloc_context();
 
   print_header(out);
 
@@ -407,11 +424,18 @@ int main(int argc, char *argv[])
     if ( ! str_ends(ep->d_name, "_spec.c")) continue;
     if (strncmp(ep->d_name, "z_", 2) == 0) continue;
 
-    funcount = process_lines(out, funcount, ep->d_name);
+    process_lines(out, c, ep->d_name);
   }
   closedir(dp);
 
-  print_footer(out, funcount);
+  print_footer(out, c->funcount);
+
+  //for (int i = 0; i < c->incc; i++)
+  //{
+  //  printf("inc: >%s<\n", c->includes[i]);
+  //}
+
+  free_context(c);
 
   fclose(out);
 
