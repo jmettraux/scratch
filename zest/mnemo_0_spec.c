@@ -40,14 +40,6 @@ describe "mne_tos()"
     {
       ensure strcmp(mne_tos(0), "a") == 0;
     }
-    it "finds the コンビニ convenient"
-    {
-    }
-    it "does not care about \n"
-    {
-    }
-
-    // that's all folks
   }
 }
 

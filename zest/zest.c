@@ -231,14 +231,18 @@ char *extract_condition(char *line)
   return strndup(l, len - 1);
 }
 
-int process_lines(FILE *out, char *path)
+int process_lines(FILE *out, int funcount, char *path)
 {
+  fprintf(out, "\n");
+  fprintf(out, "  /*\n");
+  fprintf(out, "   * %s\n", path);
+  fprintf(out, "   */\n");
+
   FILE *fp = fopen(path, "r");
   if (fp == NULL) return 0;
 
   level_s *stack = NULL;
   int varcount = 0;
-  int funcount = -1;
 
   int lnumber = 1;
   char *line = NULL;
@@ -269,11 +273,11 @@ int process_lines(FILE *out, char *path)
       push(&stack, indent, 'i', title);
       char *s = list_titles_as_literal(&stack);
       int sc = depth(&stack);
-      funcount++;
       fprintf(out, "\n");
       fprintf(out, "int sc_%i = %i;\n", funcount, sc);
       fprintf(out, "char *s_%i[] = %s;\n", funcount, s);
       fprintf(out, "int test_%i()\n", funcount);
+      funcount++;
       free(s);
     }
     else if (strncmp(head, "ensure", 6) == 0)
@@ -323,16 +327,21 @@ int process_lines(FILE *out, char *path)
 
   free_stack(&stack);
 
-  for (int i = 0; i < incc; i++)
-  {
-    printf("inc: >%s<\n", includes[i]);
-  }
+  //for (int i = 0; i < incc; i++)
+  //{
+  //  printf("inc: >%s<\n", includes[i]);
+  //}
 
-  return 1;
+  return funcount;
 }
 
-void print_header(FILE *out, char *path)
+void print_header(FILE *out)
 {
+  fputs("\n", out);
+  fputs("  /*\n", out);
+  fputs("   * zest header\n", out);
+  fputs("   */\n\n", out);
+
   fputs("#include <stdio.h>\n", out);
 
   fputs("char *ze_last_context = NULL;\n", out);
@@ -349,40 +358,21 @@ void print_header(FILE *out, char *path)
   fputs("  return 0;\n", out);
   fputs("}\n", out);
 }
-void print_footer(FILE *out, char *path)
+void print_footer(FILE *out, int funcount)
 {
+  fputs("\n", out);
+  fputs("  /*\n", out);
+  fputs("   * zest footer\n", out);
+  fputs("   */\n\n", out);
+
   // TODO: deal with -l, -e and co
   fprintf(out, "int main(int argc, char *argv[])\n");
   fprintf(out, "{\n");
-  fprintf(out, "  test_0();\n");
-  fprintf(out, "}\n");
-}
-
-int process(char *path)
-{
-  char *fname = (char *)calloc(strlen(path) + 3, sizeof(char));
-  strcat(fname, "z_");
-  strcat(fname, path);
-  FILE *out = fopen(fname, "wb");
-
-  if (out == NULL)
+  for (int i = 0; i < funcount; i++)
   {
-    perror("couldn't open file for writing");
-    return 0;
+    fprintf(out, "  test_%d();\n", i);
   }
-
-  int r = 1;
-
-  print_header(out, path);
-
-  r = process_lines(out, path);
-
-  print_footer(out, path);
-
-  free(fname);
-  fclose(out);
-
-  return r;
+  fprintf(out, "}\n");
 }
 
 int main(int argc, char *argv[])
@@ -390,10 +380,7 @@ int main(int argc, char *argv[])
   char *dir = ".";
   if (argc > 1) dir = argv[1];
 
-  DIR *dp;
-  struct dirent *ep;
-
-  dp = opendir(dir);
+  DIR *dp = opendir(dir);
 
   if (dp == NULL)
   {
@@ -401,14 +388,32 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  FILE *out = fopen("z.c", "wb");
+
+  if (out == NULL)
+  {
+    perror("couldn't open z.c file for writing");
+    return 0;
+  }
+
+  int funcount = 0;
+
+  print_header(out);
+
+  struct dirent *ep;
+
   while ((ep = readdir(dp)) != NULL)
   {
     if ( ! str_ends(ep->d_name, "_spec.c")) continue;
     if (strncmp(ep->d_name, "z_", 2) == 0) continue;
 
-    process(ep->d_name);
+    funcount = process_lines(out, funcount, ep->d_name);
   }
   closedir(dp);
+
+  print_footer(out, funcount);
+
+  fclose(out);
 
   return 0;
 }
