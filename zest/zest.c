@@ -410,7 +410,7 @@ int main(int argc, char *argv[])
   if (out == NULL)
   {
     perror("couldn't open z.c file for writing");
-    return 0;
+    return 1;
   }
 
   context_s *c = malloc_context();
