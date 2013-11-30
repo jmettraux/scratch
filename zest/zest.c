@@ -244,6 +244,9 @@ int process_lines(FILE *out, char *path)
   char *line = NULL;
   size_t len = 0;
 
+  int incc = 0;
+  char **includes = malloc(147 * 161 * sizeof(char));
+
   while (getline(&line, &len, fp) != -1)
   {
     int indent = extract_indent(line);
@@ -302,6 +305,10 @@ int process_lines(FILE *out, char *path)
     }
     else
     {
+      if (strncmp(head, "#include", 8) == 0 && title)
+      {
+        includes[incc++] = strdup(title);
+      }
       fprintf(out, "%s", line);
     }
 
@@ -315,6 +322,11 @@ int process_lines(FILE *out, char *path)
   fclose(fp);
 
   free_stack(&stack);
+
+  for (int i = 0; i < incc; i++)
+  {
+    printf("inc: >%s<\n", includes[i]);
+  }
 
   return 1;
 }
