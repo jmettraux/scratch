@@ -51,36 +51,6 @@ int str_ends(char *s, char *end)
   return (strncmp(s + ls - le, end, le) == 0);
 }
 
-/*
-//
-// test function result struct
-
-typedef struct result_s {
-  char *title;
-  //char *line;
-  char *fname;
-  int lnumber;
-} result_s;
-
-result_s *fail(char *title, char *fname, int lnumber)
-{
-  result_s *r = malloc(sizeof(result_s));
-  r->title = strdup(title);
-  //r->line = strdup(line);
-  r->fname = strdup(fname);
-  r->lnumber = lnumber;
-  return r;
-}
-
-void free_result(result_s *r)
-{
-  free(r->title);
-  //free(r->line);
-  free(r->fname);
-  free(r);
-}
-*/
-
 //
 // the stack
 
@@ -311,8 +281,12 @@ int process_lines(FILE *out, char *path)
         "  int r%i = (%s);\n", varcount, con);
       fprintf(
         out,
-        "  if ( ! r%i) return fail(sc_%i, s_%i, \"%s\", %d);\n",
+        "    if ( ! r%i) return ze_fail(sc_%i, s_%i, \"%s\", %d);\n",
         varcount, funcount, funcount, path, lnumber);
+      fprintf(
+        out,
+        "    else ze_success(sc_%i, s_%i, \"%s\", %d);\n",
+        funcount, funcount, path, lnumber);
       free(con);
       ++varcount;
     }
@@ -348,7 +322,16 @@ int process_lines(FILE *out, char *path)
 void print_header(FILE *out, char *path)
 {
   fputs("#include <stdio.h>\n", out);
-  fputs("int fail(int sc, char *s[], char *fname, int lnumber)\n", out);
+
+  fputs("char *ze_last_context = NULL;\n", out);
+
+  fputs("void ze_success(int sc, char *s[], char *fname, int lnumber)\n", out);
+  fputs("{\n", out);
+  fputs("  printf(\"success at line: \%s:\%d\\n\", fname, lnumber);\n", out);
+  // TODO: change me, and use ze_last_context...
+  fputs("}\n", out);
+
+  fputs("int ze_fail(int sc, char *s[], char *fname, int lnumber)\n", out);
   fputs("{\n", out);
   fputs("  printf(\"failed at line: \%s:\%d\\n\", fname, lnumber);\n", out);
   fputs("  return 0;\n", out);
