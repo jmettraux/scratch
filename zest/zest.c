@@ -437,8 +437,26 @@ int compile(context_s *c)
 
 int run(context_s *c)
 {
-  // TODO
-  return 0;
+  char *s = calloc(c->incc, 80 * sizeof(char));
+
+  strcat(s, "LD_LIBRARY_PATH=$LD_LIBRARY_PATH");
+
+  for (int i = 0; i < c->incc; i++)
+  {
+    char *s0 = strdup(c->includes[i]);
+    strcat(s, ":");
+    strcat(s, dirname(s0));
+    free(s0);
+  }
+  strcat(s, " ./a.out");
+
+  printf("! %s\n", s);
+
+  int r = system(s);
+
+  free(s);
+
+  return r;
 }
 
 int main(int argc, char *argv[])
@@ -482,11 +500,6 @@ int main(int argc, char *argv[])
   print_footer(out, c->funcount);
 
   fclose(out);
-
-  //for (int i = 0; i < c->incc; i++)
-  //{
-  //  printf("inc: >%s<\n", c->includes[i]);
-  //}
 
   int r;
 
