@@ -435,7 +435,9 @@ int main(int argc, char *argv[])
   while ((ep = readdir(dp)) != NULL)
   {
     if ( ! str_ends(ep->d_name, "_spec.c")) continue;
-    if (strncmp(ep->d_name, "z_", 2) == 0) continue;
+    //if (strncmp(ep->d_name, "z_", 2) == 0) continue;
+
+    printf(". processing %s\n", ep->d_name);
 
     process_lines(out, c, ep->d_name);
   }
@@ -443,14 +445,16 @@ int main(int argc, char *argv[])
 
   print_footer(out, c->funcount);
 
+  fclose(out);
+
   //for (int i = 0; i < c->incc; i++)
   //{
   //  printf("inc: >%s<\n", c->includes[i]);
   //}
+  printf(". compiling z.c\n");
+  int r = system("gcc -std=c99 z.c");
 
   free_context(c);
-
-  fclose(out);
 
   return 0;
 }
