@@ -388,6 +388,7 @@ void print_header(FILE *out)
   fputs("  return 0;\n", out);
   fputs("}\n", out);
 }
+
 void print_footer(FILE *out, int funcount)
 {
   fputs("\n", out);
@@ -403,6 +404,18 @@ void print_footer(FILE *out, int funcount)
     fprintf(out, "  test_%d();\n", i);
   }
   fprintf(out, "}\n");
+}
+
+int compile(context_s *c)
+{
+  int r = system("gcc -std=c99 z.c");
+  return r;
+}
+
+int run(context_s *c)
+{
+  // TODO
+  return 0;
 }
 
 int main(int argc, char *argv[])
@@ -451,8 +464,18 @@ int main(int argc, char *argv[])
   //{
   //  printf("inc: >%s<\n", c->includes[i]);
   //}
+  int r;
+
   printf(". compiling z.c\n");
-  int r = system("gcc -std=c99 z.c");
+  r = compile(c);
+
+  if (r == 0) {
+    printf(". running specs\n");
+    run(c);
+  }
+
+  if (r == 0) printf(". success.\n");
+  else printf(". failure.\n");
 
   free_context(c);
 
