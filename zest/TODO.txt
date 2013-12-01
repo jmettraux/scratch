@@ -9,6 +9,8 @@
 [ ] make && ./zest && gcc -std=c99 -L../mnemo -lmnemo z_mnemo_spec.c && ./a.out
     LD_LIBRARY_PATH too... :-(
 
+[ ] -V run with Valgrind
+
 ```
 Rufus::Scheduler
   custom locks

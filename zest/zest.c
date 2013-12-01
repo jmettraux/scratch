@@ -127,26 +127,6 @@ void free_stack(level_s **stack)
   while( ! pop(stack)) {}
 }
 
-char *str_neuter(char *s)
-{
-  char *r = strdup(s);
-  char *c = r;
-
-  while(*c != '\0')
-  {
-    if (
-      ! (
-        (*c >= 48 && *c <= 57) ||   // 0 to 9
-        (*c >= 97 && *c <= 122) ||  // a to z
-        (*c >= 65 && *c <= 90)      // A to Z
-      )
-    ) *c = '_';
-    ++c;
-  }
-
-  return r;
-}
-
 char **list_titles(level_s **stack)
 {
   int d = depth(stack);
