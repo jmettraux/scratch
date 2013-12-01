@@ -63,7 +63,7 @@ typedef struct context_s {
 context_s *malloc_context()
 {
   context_s *c = malloc(sizeof(context_s));
-  c->funcount = 0;
+  c->funcount = -1;
   c->incc = 0;
   c->includes = malloc(147 * 161 * sizeof(char));
   return c;
@@ -309,11 +309,11 @@ void process_lines(FILE *out, context_s *c, char *path)
       push(&stack, indent, 'i', title);
       char *s = list_titles_as_literal(&stack);
       int sc = depth(&stack);
+      c->funcount++;
       fprintf(out, "\n");
       fprintf(out, "int sc_%i = %i;\n", c->funcount, sc);
       fprintf(out, "char *s_%i[] = %s;\n", c->funcount, s);
       fprintf(out, "int test_%i()\n", c->funcount);
-      c->funcount++;
       free(s);
     }
     else if (strncmp(head, "ensure", 6) == 0)
@@ -398,7 +398,7 @@ void print_footer(FILE *out, int funcount)
   // TODO: deal with -l, -e and co
   fprintf(out, "int main(int argc, char *argv[])\n");
   fprintf(out, "{\n");
-  for (int i = 0; i < funcount; i++)
+  for (int i = 0; i <= funcount; i++)
   {
     fprintf(out, "  test_%d();\n", i);
   }
