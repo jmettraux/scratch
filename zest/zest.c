@@ -169,7 +169,7 @@ char *list_titles_as_literal(level_s **stack)
 
   char **titles = list_titles(stack);
 
-  char *r = (char *)malloc((d + 1) * (4 + TITLE_MAX_LENGTH) * sizeof(char));
+  char *r = malloc((d + 1) * (4 + TITLE_MAX_LENGTH) * sizeof(char));
   char *rr = r;
 
   strcpy(rr, "{ ");
@@ -249,13 +249,34 @@ char *extract_title(char *line)
   return extract_string(start + 1);
 }
 
-char *extract_condition(char *line)
+int ends_in_semicolon(char *line)
 {
-  char *l = line;
-  l = strpbrk(l, "e") + 7;
-  int len = strlen(l) - 1;
-  while (*(l + (len - 1)) != ';') len = len - 1;
-  return strndup(l, len - 1);
+  //printf("strlen(line): %ld\n", strlen(line));
+  for (int l = strlen(line); l > 1; l--)
+  {
+    char c = line[l - 1];
+    //printf("c: >%c<\n", c);
+    if (c == ';') return 1;
+    if (c == ' ' || c == '\t' || c == '\n') continue;
+    return 0;
+  }
+  return 0;
+}
+
+char *extract_condition(FILE *in, char *line)
+{
+  char *r = malloc(147 * 80 * sizeof(char));
+  char *rr = r;
+  size_t len = 0;
+  while (1)
+  {
+    strcpy(rr, line);
+    rr += strlen(line);
+    if (ends_in_semicolon(line)) break;
+    if (getline(&line, &len, in) == -1) break;
+  }
+  *rr = '\0';
+  return r;
 }
 
 void process_lines(FILE *out, context_s *c, char *path)
@@ -306,10 +327,11 @@ void process_lines(FILE *out, context_s *c, char *path)
     }
     else if (strncmp(head, "ensure", 6) == 0)
     {
-      char *con = extract_condition(line);
+      char *l = strpbrk(line, "e");
+      char *con = extract_condition(in, l + 6);
       fprintf(
         out,
-        "  int r%i = (%s);\n", varcount, con);
+        "  int r%i = %s", varcount, con);
       fprintf(
         out,
         "    if ( ! r%i) return ze_fail(sc_%i, s_%i, \"%s\", %d);\n",

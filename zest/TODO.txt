@@ -1,5 +1,5 @@
 
-[ ] ensure: multiline
+[o] ensure: multiline
 [x] ensure: other name
 [o] ensure: return endure_fail_s { char *line; int lineNumber }...
 [o] make zeq independent from string.h, and bounded

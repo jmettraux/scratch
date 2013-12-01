@@ -28,17 +28,19 @@ describe "mne_tos()"
       {
         //printf("i: %d\n", i);
       }
-      ensure strcmp(mne_tos(0), "a") == 0;
-      ensure strcmp(mne_tos(7), "FAIL") == 0;
-      ensure strcmp(mne_tos(1), "i") == 0;
-      ensure strcmp(mne_tos(47), "ia") == 0;
-      ensure strcmp(mne_tos(-1), "wii") == 0;
-      ensure strcmp(mne_tos(1234567), "shirerete") == 0;
-      ensure strcmp(mne_tos(0), "a") == 0;
+      ensure(
+        strcmp(mne_tos(0), "a") == 0
+      );
+      ensure(strcmp(mne_tos(7), "FAIL") == 0);
+      ensure(strcmp(mne_tos(1), "i") == 0);
+      ensure(strcmp(mne_tos(47), "ia") == 0);
+      ensure(strcmp(mne_tos(-1), "wii") == 0);
+      ensure(strcmp(mne_tos(1234567), "shirerete") == 0);
+      ensure(strcmp(mne_tos(0), "a") == 0);
     }
     it "flips \"burgers\""
     {
-      ensure strcmp(mne_tos(0), "a") == 0;
+      ensure(strcmp(mne_tos(0), "a") == 0);
     }
   }
 }
