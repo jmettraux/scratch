@@ -265,8 +265,8 @@ void process_lines(FILE *out, context_s *c, char *path)
   fprintf(out, "   * %s\n", path);
   fprintf(out, "   */\n");
 
-  FILE *fp = fopen(path, "r");
-  if (fp == NULL) return;
+  FILE *in = fopen(path, "r");
+  if (in == NULL) return;
 
   level_s *stack = NULL;
   int varcount = 0;
@@ -275,7 +275,7 @@ void process_lines(FILE *out, context_s *c, char *path)
   char *line = NULL;
   size_t len = 0;
 
-  while (getline(&line, &len, fp) != -1)
+  while (getline(&line, &len, in) != -1)
   {
     int indent = extract_indent(line);
     char *head = extract_head(line);
@@ -347,7 +347,7 @@ void process_lines(FILE *out, context_s *c, char *path)
   }
 
   free(line);
-  fclose(fp);
+  fclose(in);
 
   free_stack(&stack);
 }
