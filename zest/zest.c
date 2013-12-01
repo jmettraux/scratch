@@ -408,7 +408,30 @@ void print_footer(FILE *out, int funcount)
 
 int compile(context_s *c)
 {
-  int r = system("gcc -std=c99 z.c");
+  char *s = calloc(c->incc, 80 * 2 * sizeof(char));
+
+  strcat(s, "gcc -std=c99");
+
+  for (int i = 0; i < c->incc; i++)
+  {
+    char *s0 = strdup(c->includes[i]);
+    char *s1 = strdup(s0);
+    strcat(s, " -L");
+    strcat(s, dirname(s0));
+    s1[strlen(s1) - 2] = '\0';
+    strcat(s, " -l");
+    strcat(s, basename(s1));
+    free(s0);
+    free(s1);
+  }
+
+  strcat(s, " z.c");
+
+  printf("! %s\n", s);
+
+  int r = system(s);
+  free(s);
+
   return r;
 }
 
@@ -464,6 +487,7 @@ int main(int argc, char *argv[])
   //{
   //  printf("inc: >%s<\n", c->includes[i]);
   //}
+
   int r;
 
   printf(". compiling z.c\n");
