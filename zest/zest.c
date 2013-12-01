@@ -267,15 +267,26 @@ char *extract_condition(FILE *in, char *line)
 {
   char *r = malloc(147 * 80 * sizeof(char));
   char *rr = r;
+
+  strcpy(rr, line);
+  rr += strlen(line);
+
+  if (ends_in_semicolon(line)) return r;
+
+  char *lin = NULL;
   size_t len = 0;
+
   while (1)
   {
-    strcpy(rr, line);
-    rr += strlen(line);
-    if (ends_in_semicolon(line)) break;
-    if (getline(&line, &len, in) == -1) break;
+    if (getline(&lin, &len, in) == -1) break;
+    strcpy(rr, lin);
+    rr += strlen(lin);
+    if (ends_in_semicolon(lin)) break;
   }
   *rr = '\0';
+
+  free(lin);
+
   return r;
 }
 
