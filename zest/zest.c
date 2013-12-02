@@ -66,6 +66,7 @@ context_s *malloc_context()
   c->includes = malloc(147 * 161 * sizeof(char));
   return c;
 }
+
 void free_context(context_s *c)
 {
   for (int i = 0; i < c->incc; i++)
@@ -74,6 +75,15 @@ void free_context(context_s *c)
   }
   free(c->includes);
   free(c);
+}
+
+void include(context_s *c, char *title)
+{
+  for (int i = 0; i < c->incc; i++)
+  {
+    if (strcmp(c->includes[i], title) == 0) return;
+  }
+  c->includes[c->incc++] = strdup(title);
 }
 
 //
@@ -344,10 +354,7 @@ void process_lines(FILE *out, context_s *c, char *path)
     }
     else
     {
-      if (strncmp(head, "#include", 8) == 0 && title)
-      {
-        c->includes[c->incc++] = strdup(title);
-      }
+      if (strncmp(head, "#include", 8) == 0 && title) include(c, title);
       fprintf(out, "%s", line);
     }
 
