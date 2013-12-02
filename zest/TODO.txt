@@ -3,10 +3,8 @@
 [x] ensure: other name
 [o] ensure: return endure_fail_s { char *line; int lineNumber }...
 [o] make zeq independent from string.h, and bounded
-
 [x] hooks file, injected when zest processes the spec?
-
-[ ] make && ./zest && gcc -std=c99 -L../mnemo -lmnemo z_mnemo_spec.c && ./a.out
+[o] make && ./zest && gcc -std=c99 -L../mnemo -lmnemo z_mnemo_spec.c && ./a.out
     LD_LIBRARY_PATH too... :-(
 
 [ ] -V run with Valgrind
