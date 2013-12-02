@@ -29,6 +29,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <stdlib.h>
+#include <libgen.h>
 
 #define TITLE_MAX_LENGTH 210
 
