@@ -8,6 +8,7 @@
     LD_LIBRARY_PATH too... :-(
 
 [ ] -V run with Valgrind
+[ ] cat footer and header into zest.c at build time
 
 ```
 Rufus::Scheduler

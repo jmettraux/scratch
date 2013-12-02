@@ -26,7 +26,6 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
-//#include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,7 +35,6 @@
 // USAGE:
 // zest [dir]
 
-// http://www.gnu.org/software/libc/manual/html_node/Simple-Directory-Lister.html
 
 //
 // helper functions
@@ -364,8 +362,6 @@ void process_lines(FILE *out, context_s *c, char *path)
 
   free_stack(&stack);
 }
-
-#define GREEN "GREEN"
 
 void print_header(FILE *out)
 {
