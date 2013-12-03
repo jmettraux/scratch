@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
   while (getline(&line, &len, in) != -1)
   {
     char *l = escape(line);
-    printf("  fputs(\"%s\", out);\n", l);
+    printf("  fputs(\"%s\\n\", out);\n", l);
     free(l);
   }
 

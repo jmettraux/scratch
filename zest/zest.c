@@ -370,39 +370,7 @@ void process_lines(FILE *out, context_s *c, char *path)
   free_stack(&stack);
 }
 
-void print_header(FILE *out)
-{
-  fputs("\n", out);
-  fputs("  /*\n", out);
-  fputs("   * zest header\n", out);
-  fputs("   */\n\n", out);
-
-  fputs("#include <stdio.h>\n", out);
-
-  fputs("char *ze_last_context = NULL;\n", out);
-
-  fputs("void ze_red() { printf(\"[31m\"); }\n", out);
-  fputs("void ze_green() { printf(\"[32m\"); }\n", out);
-  fputs("void ze_yellow() { printf(\"[33m\"); }\n", out);
-  fputs("void ze_white() { printf(\"[37m\"); }\n", out);
-  fputs("void ze_clear() { printf(\"[0m\"); }\n", out);
-
-  fputs("void ze_success(int sc, char *s[], char *fname, int lnumber)\n", out);
-  fputs("{\n", out);
-  fputs("  ze_green();\n", out);
-  fputs("  printf(\"success at line: \%s:\%d\\n\", fname, lnumber);\n", out);
-  fputs("  ze_clear();\n", out);
-  // TODO: change me, and use ze_last_context...
-  fputs("}\n", out);
-
-  fputs("int ze_fail(int sc, char *s[], char *fname, int lnumber)\n", out);
-  fputs("{\n", out);
-  fputs("  ze_red();\n", out);
-  fputs("  printf(\"failed at line: \%s:\%d\\n\", fname, lnumber);\n", out);
-  fputs("  ze_clear();\n", out);
-  fputs("  return 0;\n", out);
-  fputs("}\n", out);
-}
+#include "header.c"
 
 void print_footer(FILE *out, int funcount)
 {
@@ -418,7 +386,8 @@ void print_footer(FILE *out, int funcount)
   {
     fprintf(out, "  test_%d();\n", i);
   }
-  fprintf(out, "}\n");
+  fputs("}\n", out);
+  fputs("\n", out);
 }
 
 int compile(context_s *c)
@@ -533,4 +502,3 @@ int main(int argc, char *argv[])
 
   return 0;
 }
-
