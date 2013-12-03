@@ -11,8 +11,6 @@ header.c: pfize header_src.c
 	./pfize header_src.c > header.c
 
 pfize: pfize.o
-pfize.o: pfize.c
-	$(CC) $(CFLAGS) -o $@ -c $<
 
 .PHONY: clean
 
