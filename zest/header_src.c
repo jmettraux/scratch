@@ -19,7 +19,9 @@ void ze_result(int success, int sc, char *s[], char *fname, int lnumber)
 {
   if (ze_last_context == NULL) ze_last_context = malloc(7 * 80 * sizeof(char));
 
-  if (strcmp(ze_last_context, s[sc - 2]) != 0)
+  char *context = s[sc - 2];
+
+  if (strcmp(ze_last_context, context) != 0)
   {
     for (int i = 0; i < sc - 1; i++)
     {
@@ -36,14 +38,14 @@ void ze_result(int success, int sc, char *s[], char *fname, int lnumber)
   printf("\n");
   ze_clear();
 
-  strcpy(ze_last_context, s[sc - 2]);
-  ze_last_context[strlen(s[sc - 2])] = '\0';
+  strcpy(ze_last_context, context);
+  ze_last_context[strlen(context)] = '\0';
     // avoiding strdup and the posix_source requirement...
 }
 
 void ze_free()
 {
   printf("\nTODO: print 'Failures:' summary\n");
-  free(ze_last_context);
+  if (ze_last_context != NULL) free(ze_last_context);
 }
 
