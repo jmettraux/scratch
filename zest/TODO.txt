@@ -7,8 +7,8 @@
 [o] make && ./zest && gcc -std=c99 -L../mnemo -lmnemo z_mnemo_spec.c && ./a.out
     LD_LIBRARY_PATH too... :-(
 [o] cat footer and header into zest.c at build time
+[o] -V run with Valgrind
 
-[ ] -V run with Valgrind
 [ ] get rid of strcat
 
 ```

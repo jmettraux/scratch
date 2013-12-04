@@ -57,6 +57,7 @@ typedef struct context_s {
   int funcount;
   int incc;
   char **includes;
+  int valgrind;
 } context_s;
 
 context_s *malloc_context()
@@ -65,6 +66,7 @@ context_s *malloc_context()
   c->funcount = -1;
   c->incc = 0;
   c->includes = malloc(147 * 161 * sizeof(char));
+  c->valgrind = 0;
   return c;
 }
 
@@ -424,7 +426,7 @@ int compile(context_s *c)
 
 int run(context_s *c)
 {
-  char *s = calloc(c->incc, 80 * sizeof(char));
+  char *s = calloc(c->incc, 2 * 80 * sizeof(char));
 
   strcat(s, "LD_LIBRARY_PATH=$LD_LIBRARY_PATH");
 
@@ -435,6 +437,7 @@ int run(context_s *c)
     strcat(s, dirname(s0));
     free(s0);
   }
+  if (c->valgrind) strcat(s, " valgrind --leak-check=full");
   strcat(s, " ./a.out");
 
   printf("! %s\n", s);
@@ -449,8 +452,19 @@ int run(context_s *c)
 
 int main(int argc, char *argv[])
 {
+  // deal with arguments
+
   char *dir = ".";
-  if (argc > 1) dir = argv[1];
+  int valgrind = 0;
+
+  for (int i = 1; i < argc; i++)
+  {
+    char *a = argv[i];
+    if (strcmp(a, "-V") == 0) valgrind = 1;
+    else dir = a;
+  }
+
+  // begin work
 
   DIR *dp = opendir(dir);
 
@@ -469,6 +483,7 @@ int main(int argc, char *argv[])
   }
 
   context_s *c = malloc_context();
+  c->valgrind = valgrind;
 
   print_header(out);
 
