@@ -334,12 +334,12 @@ void process_lines(FILE *out, context_s *c, char *path)
         "  int r%i = %s", varcount, con);
       fprintf(
         out,
-        "    if ( ! r%i) return ze_fail(sc_%i, s_%i, \"%s\", %d);\n",
+        "    ze_result(r%i, sc_%i, s_%i, \"%s\", %d);\n",
         varcount, c->funcount, c->funcount, path, lnumber);
       fprintf(
         out,
-        "    else ze_success(sc_%i, s_%i, \"%s\", %d);\n",
-        c->funcount, c->funcount, path, lnumber);
+        "    if ( ! r%i) return 0;\n",
+        varcount);
       free(con);
       ++varcount;
     }
@@ -436,6 +436,7 @@ int run(context_s *c)
   strcat(s, " ./a.out");
 
   printf("! %s\n", s);
+  printf("\n");
 
   int r = system(s);
 
@@ -496,6 +497,7 @@ int main(int argc, char *argv[])
     run(c);
   }
 
+  printf("\n");
   if (r == 0) printf(". success.\n");
   else printf(". failure.\n");
 

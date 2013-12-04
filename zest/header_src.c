@@ -13,19 +13,20 @@ void ze_yellow() { printf("[33m"); }
 void ze_white() { printf("[37m"); }
 void ze_clear() { printf("[0m"); }
 
-void ze_success(int sc, char *s[], char *fname, int lnumber)
+void ze_result(int success, int sc, char *s[], char *fname, int lnumber)
 {
-  ze_green();
-  printf("success at line: %s:%d\n", fname, lnumber);
-  ze_clear();
-  // TODO: change me, and use ze_last_context...
-}
+  for (int i = 0; i < sc - 1; i++)
+  {
+    for (int ii = 0; ii < i; ii++) printf("  "); // indent
+    printf("%s\n", s[i]);
+  }
 
-int ze_fail(int sc, char *s[], char *fname, int lnumber)
-{
-  ze_red();
-  printf("failed at line: %s:%d\n", fname, lnumber);
+  for (int ii = 0; ii < sc - 1; ii++) printf("  "); // indent
+  if (success) ze_green();
+  else ze_red();
+  printf("%s", s[sc - 1]);
+  if ( ! success) printf(" (FAILED)");
+  printf("\n");
   ze_clear();
-  return 0;
 }
 
