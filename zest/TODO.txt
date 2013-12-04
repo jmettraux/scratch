@@ -6,9 +6,9 @@
 [x] hooks file, injected when zest processes the spec?
 [o] make && ./zest && gcc -std=c99 -L../mnemo -lmnemo z_mnemo_spec.c && ./a.out
     LD_LIBRARY_PATH too... :-(
+[o] cat footer and header into zest.c at build time
 
 [ ] -V run with Valgrind
-[ ] cat footer and header into zest.c at build time
 [ ] get rid of strcat
 
 ```

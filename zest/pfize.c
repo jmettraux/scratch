@@ -53,17 +53,19 @@ int main(int argc, char *argv[])
 
   printf("void print_header(FILE *out)\n");
   printf("{\n");
+  printf("  fputs(\n");
 
   while (getline(&line, &len, in) != -1)
   {
     char *l = escape(line);
-    printf("  fputs(\"%s\\n\", out);\n", l);
+    printf("    \"%s\\n\"\n", l);
     free(l);
   }
 
   free(line);
   fclose(in);
 
+  printf("    , out);\n");
   printf("}\n");
 }
 
