@@ -31,10 +31,10 @@
 
 char *escape(char *line)
 {
-  line[strlen(line) - 1] = '\0';
-  char *l = malloc(9 * 80 * sizeof(char));
+  int len = strlen(line) - 1;
+  line[len] = '\0';
+  char *l = malloc(2 * len * sizeof(char));
   char *ll = l;
-  int len = strlen(line);
   for (int i = 0; i < len; i++)
   {
     char c = line[i];
