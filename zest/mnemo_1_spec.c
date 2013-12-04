@@ -5,13 +5,15 @@
 
 describe "mne_tos()"
 {
-  context "cows are flying"
+  context "birds are flying"
   {
     it "finds the コンビニ convenient"
     {
+      ensure(1 == 1);
     }
     it "does not care about \n"
     {
+      ensure(1 == 2);
     }
 
     // that's all folks

@@ -387,6 +387,8 @@ void print_footer(FILE *out, int funcount)
   {
     fprintf(out, "  test_%d();\n", i);
   }
+  fputs("\n", out);
+  fputs("  ze_free();\n", out);
   fputs("}\n", out);
   fputs("\n", out);
 }

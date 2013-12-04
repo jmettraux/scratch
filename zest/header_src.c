@@ -4,6 +4,8 @@
    */
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 char *ze_last_context = NULL;
 
@@ -15,10 +17,15 @@ void ze_clear() { printf("[0m"); }
 
 void ze_result(int success, int sc, char *s[], char *fname, int lnumber)
 {
-  for (int i = 0; i < sc - 1; i++)
+  if (ze_last_context == NULL) ze_last_context = malloc(7 * 80 * sizeof(char));
+
+  if (strcmp(ze_last_context, s[sc - 2]) != 0)
   {
-    for (int ii = 0; ii < i; ii++) printf("  "); // indent
-    printf("%s\n", s[i]);
+    for (int i = 0; i < sc - 1; i++)
+    {
+      for (int ii = 0; ii < i; ii++) printf("  "); // indent
+      printf("%s\n", s[i]);
+    }
   }
 
   for (int ii = 0; ii < sc - 1; ii++) printf("  "); // indent
@@ -28,5 +35,15 @@ void ze_result(int success, int sc, char *s[], char *fname, int lnumber)
   if ( ! success) printf(" (FAILED)");
   printf("\n");
   ze_clear();
+
+  strcpy(ze_last_context, s[sc - 2]);
+  ze_last_context[strlen(s[sc - 2])] = '\0';
+    // avoiding strdup and the posix_source requirement...
+}
+
+void ze_free()
+{
+  printf("\nTODO: print 'Failures:' summary\n");
+  free(ze_last_context);
 }
 
