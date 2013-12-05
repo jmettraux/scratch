@@ -97,15 +97,17 @@ typedef struct level_s {
   int indent;
   char type;
   char *title;
+  int lstart;
 } level_s;
 
-void push(level_s **stack, int indent, char type, char *title)
+void push(level_s **stack, int indent, char type, char *title, int lstart)
 {
   level_s *l = malloc(sizeof(level_s));
   l->parent = *stack;
   l->indent = indent;
   l->type = type;
   l->title = strdup(title);
+  l->lstart = lstart;
   *stack = l;
 }
 
@@ -308,16 +310,16 @@ void process_lines(FILE *out, context_s *c, char *path)
     if (strncmp(head, "describe", 8) == 0)
     {
       if (stype == 'i') pop(&stack);
-      push(&stack, indent, 'd', title);
+      push(&stack, indent, 'd', title, lnumber);
     }
     else if (strncmp(head, "context", 7) == 0)
     {
       if (stype == 'i') pop(&stack);
-      push(&stack, indent, 'c', title);
+      push(&stack, indent, 'c', title, lnumber);
     }
     else if (strncmp(head, "it", 2) == 0)
     {
-      push(&stack, indent, 'i', title);
+      push(&stack, indent, 'i', title, lnumber);
       char *s = list_titles_as_literal(&stack);
       int sc = depth(&stack);
       c->funcount++;
@@ -522,3 +524,4 @@ int main(int argc, char *argv[])
 
   return 0;
 }
+
