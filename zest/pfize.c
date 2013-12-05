@@ -45,13 +45,18 @@ char *escape(char *line)
   return l;
 }
 
+// arg[1] : function name
+// arg[2] : target file name
+//
 int main(int argc, char *argv[])
 {
-  FILE *in = fopen(argv[1], "r");
+  char *func_name = argv[1];
+  FILE *in = fopen(argv[2], "r");
+
   char *line = NULL;
   size_t len = 0;
 
-  printf("void print_header(FILE *out)\n");
+  printf("void %s(FILE *out)\n", func_name);
   printf("{\n");
   printf("  fputs(\n");
 
