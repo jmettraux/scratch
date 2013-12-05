@@ -67,9 +67,13 @@ void ze_result(int success, int sc, char *s[], char *fname, int lnumber)
     // avoiding strdup and the posix_source requirement...
 }
 
-void ze_free()
+void ze_summary()
 {
   printf("\nTODO: print 'Failures:' summary\n");
+}
+
+void ze_free()
+{
   if (ze_last_context != NULL) free(ze_last_context);
 }
 
