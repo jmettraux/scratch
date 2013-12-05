@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
 
   while (getline(&line, &len, in) != -1)
   {
+    if (strncmp(line, "//", 2) == 0) continue;
+
     char *l = escape(line);
     printf("    \"%s\\n\"\n", l);
     free(l);
