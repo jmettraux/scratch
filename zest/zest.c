@@ -493,12 +493,15 @@ char **list_spec_files(int argc, char *argv[])
 {
   char **r = calloc(512, sizeof(char *));
   int c = 0;
+  int args_seen = 0;
 
   for (int i = 1; i < argc; i++)
   {
     char *arg = argv[i];
 
     if (strncmp(arg, "-", 1) == 0) continue;
+
+    args_seen++;
 
     wordexp_t we;
     wordexp(arg, &we, 0);
@@ -510,6 +513,8 @@ char **list_spec_files(int argc, char *argv[])
 
     wordfree(&we);
   }
+
+  if (args_seen < 1) add_spec_files(&c, r, ".");
 
   return r;
 }
