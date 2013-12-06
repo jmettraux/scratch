@@ -459,6 +459,36 @@ int run(context_s *c)
   return r;
 }
 
+int add_spec_file(int *count, char **names, char *fname)
+{
+  if ( ! str_ends(fname, "_spec.c")) return 0;
+
+  for (int i = 0; i < *count; i++)
+  {
+    if (strcmp(names[i], fname) == 0) return 1; // prevent duplicates
+  }
+
+  names[(*count)++] = strdup(fname);
+  return 1;
+}
+
+void add_spec_files(int *count, char **names, char *path)
+{
+  if (add_spec_file(count, names, path)) return;
+
+  DIR *dir = opendir(path);
+
+  if (dir == NULL) return;
+
+  struct dirent *ep;
+  while ((ep = readdir(dir)) != NULL)
+  {
+    add_spec_file(count, names, ep->d_name);
+  }
+
+  closedir(dir);
+}
+
 char **list_spec_files(int argc, char *argv[])
 {
   char **r = calloc(512, sizeof(char *));
@@ -475,23 +505,7 @@ char **list_spec_files(int argc, char *argv[])
 
     for (int j = 0; j < we.we_wordc; j++)
     {
-      char *w = we.we_wordv[j];
-
-      if (str_ends(arg, "_spec.c"))
-      {
-        r[c++] = strdup(w);
-      }
-      else
-      {
-        DIR *dir = opendir(w);
-        if (dir == NULL) continue;
-        struct dirent *ep;
-        while ((ep = readdir(dir)) != NULL)
-        {
-          if (str_ends(ep->d_name, "_spec.c")) r[c++] = strdup(ep->d_name);
-        }
-        closedir(dir);
-      }
+      add_spec_files(&c, r, we.we_wordv[j]);
     }
 
     wordfree(&we);
