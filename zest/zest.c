@@ -30,11 +30,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libgen.h>
+#include <wordexp.h>
 
 #define TITLE_MAX_LENGTH 210
-
-// USAGE:
-// zest [dir]
 
 
 //
@@ -65,7 +63,7 @@ context_s *malloc_context()
   context_s *c = malloc(sizeof(context_s));
   c->funcount = -1;
   c->incc = 0;
-  c->includes = malloc(147 * 161 * sizeof(char));
+  c->includes = malloc(147 * sizeof(char *));
   c->valgrind = 0;
   return c;
 }
@@ -393,7 +391,6 @@ void print_footer(FILE *out, int funcount)
   fputs("   * zest footer\n", out);
   fputs("   */\n\n", out);
 
-  // TODO: deal with -l, -e and co
   fprintf(out, "int main(int argc, char *argv[])\n");
   fprintf(out, "{\n");
   for (int i = 0; i <= funcount; i++)
@@ -409,7 +406,7 @@ void print_footer(FILE *out, int funcount)
 
 int compile(context_s *c)
 {
-  char *s = calloc(c->incc, 80 * 2 * sizeof(char));
+  char *s = calloc(1 + c->incc, 80 * 2 * sizeof(char));
 
   strcat(s, "gcc -std=c99");
 
@@ -438,7 +435,7 @@ int compile(context_s *c)
 
 int run(context_s *c)
 {
-  char *s = calloc(c->incc, 2 * 80 * sizeof(char));
+  char *s = calloc(1 + c->incc, 2 * 80 * sizeof(char));
 
   strcat(s, "LD_LIBRARY_PATH=$LD_LIBRARY_PATH");
 
@@ -462,29 +459,60 @@ int run(context_s *c)
   return r;
 }
 
+char **list_spec_files(int argc, char *argv[])
+{
+  char **r = calloc(512, sizeof(char *));
+  int c = 0;
+
+  for (int i = 1; i < argc; i++)
+  {
+    char *arg = argv[i];
+
+    if (strncmp(arg, "-", 1) == 0) continue;
+
+    wordexp_t we;
+    wordexp(arg, &we, 0);
+
+    for (int j = 0; j < we.we_wordc; j++)
+    {
+      char *w = we.we_wordv[j];
+
+      if (str_ends(arg, "_spec.c"))
+      {
+        r[c++] = strdup(w);
+      }
+      else
+      {
+        DIR *dir = opendir(w);
+        if (dir == NULL) continue;
+        struct dirent *ep;
+        while ((ep = readdir(dir)) != NULL)
+        {
+          if (str_ends(ep->d_name, "_spec.c")) r[c++] = strdup(ep->d_name);
+        }
+        closedir(dir);
+      }
+    }
+
+    wordfree(&we);
+  }
+
+  return r;
+}
+
 int main(int argc, char *argv[])
 {
   // deal with arguments
 
-  char *dir = ".";
-  int valgrind = 0;
+  context_s *c = malloc_context();
 
   for (int i = 1; i < argc; i++)
   {
     char *a = argv[i];
-    if (strcmp(a, "-V") == 0) valgrind = 1;
-    else dir = a;
+    if (strcmp(a, "-V") == 0) c->valgrind = 1;
   }
 
   // begin work
-
-  DIR *dp = opendir(dir);
-
-  if (dp == NULL)
-  {
-    perror("couldn't open directory");
-    return 1;
-  }
 
   FILE *out = fopen("z.c", "wb");
 
@@ -494,23 +522,21 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  context_s *c = malloc_context();
-  c->valgrind = valgrind;
-
   print_header(out);
 
-  struct dirent *ep;
+  char **fnames = list_spec_files(argc, argv);
 
-  while ((ep = readdir(dp)) != NULL)
+  for (int i = 0; ; i++)
   {
-    if ( ! str_ends(ep->d_name, "_spec.c")) continue;
-    //if (strncmp(ep->d_name, "z_", 2) == 0) continue;
+    if (fnames[i] == NULL) break;
 
-    printf(". processing %s\n", ep->d_name);
+    printf(". processing %s\n", fnames[i]);
 
-    process_lines(out, c, ep->d_name);
+    process_lines(out, c, fnames[i]);
+
+    free(fnames[i]);
   }
-  closedir(dp);
+  free(fnames);
 
   print_footer(out, c->funcount);
 
