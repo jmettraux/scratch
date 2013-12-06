@@ -56,6 +56,7 @@ typedef struct context_s {
   int incc;
   char **includes;
   int valgrind;
+  int run;
 } context_s;
 
 context_s *malloc_context()
@@ -65,6 +66,7 @@ context_s *malloc_context()
   c->incc = 0;
   c->includes = malloc(147 * sizeof(char *));
   c->valgrind = 0;
+  c->run = 0;
   return c;
 }
 
@@ -528,7 +530,13 @@ int main(int argc, char *argv[])
   for (int i = 1; i < argc; i++)
   {
     char *a = argv[i];
-    if (strcmp(a, "-V") == 0) c->valgrind = 1;
+    if (strcmp(a, "-V") == 0) {
+      c->run = 1;
+      c->valgrind = 1;
+    }
+    else if (strcmp(a, "-r") == 0) {
+      c->run = 1;
+    }
   }
 
   // begin work
@@ -561,19 +569,24 @@ int main(int argc, char *argv[])
 
   fclose(out);
 
-  int r;
+  printf(". wrote z.c\n");
 
-  printf(". compiling z.c\n");
-  r = compile(c);
+  if (c->run)
+  {
+    int r;
 
-  if (r == 0) {
-    printf(". running specs\n");
-    run(c);
+    printf(". compiling z.c\n");
+    r = compile(c);
+
+    if (r == 0) {
+      printf(". running specs\n");
+      run(c);
+    }
+
+    printf("\n");
+    if (r == 0) printf(". success.\n");
+    else printf(". failure.\n");
   }
-
-  printf("\n");
-  if (r == 0) printf(". success.\n");
-  else printf(". failure.\n");
 
   free_context(c);
 
