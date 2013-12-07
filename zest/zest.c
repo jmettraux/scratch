@@ -334,6 +334,7 @@ void process_lines(FILE *out, context_s *c, char *path)
       fprintf(out, "\n");
       fprintf(out, "int sc_%i = %i;\n", c->funcount, sc);
       fprintf(out, "char *s_%i[] = %s;\n", c->funcount, s);
+      fprintf(out, "char *fn_%i = \"%s\";\n", c->funcount, path);
       fprintf(out, "int test_%i()\n", c->funcount);
       free(s);
     }
@@ -346,8 +347,8 @@ void process_lines(FILE *out, context_s *c, char *path)
         "  int r%i = %s", varcount, con);
       fprintf(
         out,
-        "    ze_result(r%i, sc_%i, s_%i, \"%s\", %d);\n",
-        varcount, c->funcount, c->funcount, path, lnumber);
+        "    ze_result(r%i, sc_%i, s_%i, fn_%i, %d);\n",
+        varcount, c->funcount, c->funcount, c->funcount, lnumber);
       fprintf(
         out,
         "    if ( ! r%i) return 0;\n",
