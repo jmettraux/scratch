@@ -156,17 +156,18 @@ char **list_titles(level_s **stack)
   return result;
 }
 
-//size_t str_neuter_copy(char *target, char *source)
-//{
-//  size_t c = 0;
-//  for (size_t i = 0; ; i++)
-//  {
-//    if (source[i] == '\\') target[c++] = '\\';
-//    target[c++] = source[i];
-//    if (source[i] == '\0') break;
-//  }
-//  return c;
-//}
+size_t str_neuter_copy(char *target, char *source)
+{
+  size_t c = 0;
+  for (size_t i = 0; ; i++)
+  {
+    char cs = source[i];
+    if (cs == '\\') { i++; continue; }
+    if (cs == '\0') break;
+    target[c++] = cs;
+  }
+  return c;
+}
 
 char *list_titles_as_literal(level_s **stack)
 {
@@ -174,7 +175,7 @@ char *list_titles_as_literal(level_s **stack)
 
   char **titles = list_titles(stack);
 
-  char *r = malloc((d + 1) * (4 + TITLE_MAX_LENGTH) * sizeof(char));
+  char *r = calloc(d + 1, 4 + TITLE_MAX_LENGTH * sizeof(char));
   char *rr = r;
 
   strcpy(rr, "{ "); rr += 2;
@@ -182,9 +183,7 @@ char *list_titles_as_literal(level_s **stack)
   for (int i = 0; i < d; i++)
   {
     strcpy(rr, "\""); rr += 1;
-    strcpy(rr, titles[i]);
-    rr += strlen(titles[i]);
-    //rr += str_neuter_copy(rr, titles[i]);
+    rr += str_neuter_copy(rr, titles[i]);
     free(titles[i]);
     strcpy(rr, "\""); rr += 1;
     if (i < d - 1) { strcpy(rr, ", "); rr += 2; }
