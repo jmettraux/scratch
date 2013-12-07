@@ -18,5 +18,5 @@ pfize: pfize.o
 
 clean:
 	rm -f *.o *.so*
-	rm -f z_*.c
+	rm -f z.c
 
