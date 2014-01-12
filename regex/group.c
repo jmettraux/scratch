@@ -25,5 +25,7 @@ int main()
     printf("ms[%d]: so:%d, eo:%d\n", i, ms[i].rm_so, ms[i].rm_eo);
     printf(">%s< (%d)\n", s + ms[i].rm_so, ms[i].rm_eo);
   }
+
+  regfree(&exp);
 }
 

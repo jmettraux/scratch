@@ -18,5 +18,7 @@ int main()
   s = "toto ?== nada";
   r = regexec(&exp, s, 0, NULL, 0);
   printf("\"%s\" match ? %s\n", s, (r == 0 ? "yes" : "no"));
+
+  regfree(&exp);
 }
 
