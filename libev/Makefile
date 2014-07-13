@@ -12,7 +12,7 @@ s: serve
 clean:
 	rm -f *.o
 	#rm -f *.c    # :-(
-	#rm -f serve  # :-(
+	rm -f serve
 
 .PHONY: clean s
 
