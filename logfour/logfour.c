@@ -36,3 +36,14 @@ int main()
   // ...
 }
 
+// a single file
+  // path to it, so we can re-open it
+// a single logger
+
+// --log-level 4
+// --log-level info
+// --log-file /var/log/flon/flon.log
+// --log-format "{date} {pid} {level} {author} {msg}"
+
+// syslog?
+
