@@ -13,5 +13,5 @@ clean:
 	rm -f *.o
 	rm -f watch
 
-.PHONY: clean s
+.PHONY: clean
 

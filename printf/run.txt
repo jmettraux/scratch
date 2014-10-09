@@ -1,0 +1,19 @@
+./pf
+. warmup
+took 2044ms
+
+. strcpy
+took 15ms
+
+. sprintf
+took 2063ms
+
+. sprintf without formatting
+took 15ms
+
+. sprintf with "%s"
+took 16ms
+
+. sprintf with "-%s-"
+took 953ms
+
