@@ -26,7 +26,7 @@ int main()
   printf(">%s<\n", d);
   printf(">%s<\n", flu64_encode((char *)d, -1));
 
-  d = MD5((unsigned char *)"toto", 4, d);
+  MD5((unsigned char *)"toto", 4, d);
   printf(">%s<\n", d);
   printf(">%s<\n", flu64_encode((char *)d, -1));
 }
