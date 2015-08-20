@@ -2,4 +2,4 @@
 *.so
 *.swp
 a.out
-t.c
+#t.c
