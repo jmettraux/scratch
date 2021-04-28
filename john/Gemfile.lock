@@ -1,8 +1,8 @@
 GEM
-  remote: https://rubygemsorg/
+  remote: https://rubygems.org/
   specs:
     diff-lcs (1.2.4)
-    ffi (1.8.1)
+    ffi (1.15.0)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
@@ -16,5 +16,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  ffi
+  ffi (>= 1.9.24)
   rspec
+
+BUNDLED WITH
+   2.2.11
